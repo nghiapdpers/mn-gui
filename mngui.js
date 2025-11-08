@@ -53,26 +53,97 @@ class Theme {
     this.onError = onError;
 
     const css = `
-      div.column {
+      div.mn-column {
         display: flex;
         flex-direction: column;
         background: ${this.surface};
         gap: 10px;
       }
 
-      div.row {
+      div.mn-row {
         display: flex;
         flex-direction: row;
         background: ${this.surface};
         gap: 10px;
       }
 
-      .padding {
+      .mn-padding {
         padding: 10px;
       }
 
-      .normal-text {
+      .mn-normal-text {
         font-size: 14px;
+      }
+
+      .mn-toggle {
+        cursor: pointer;
+        display: inline-block;
+      }
+
+      .mn-toggle-switch {
+        display: inline-block;
+        background: ${this.background};
+        border-radius: 16px;
+        width: 58px;
+        height: 32px;
+        position: relative;
+        vertical-align: middle;
+        transition: background 0.25s;
+      }
+      .mn-toggle-switch:before, .mn-toggle-switch:after {
+        content: "";
+      }
+      .mn-toggle-switch:before {
+        display: block;
+        background: linear-gradient(to bottom, ${this.surface} 0%, ${this.background} 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        transition: left 0.25s;
+      }
+      .mn-toggle:hover .mn-toggle-switch:before {
+        background: linear-gradient(to bottom, ${this.surface} 0%, ${this.background} 100%);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+      }
+      .mn-toggle-checkbox:checked + .mn-toggle-switch {
+        background: ${this.primary};
+      }
+      .mn-toggle-checkbox:checked + .mn-toggle-switch:before {
+        left: 30px;
+      }
+
+      .mn-toggle-checkbox {
+        position: absolute;
+        visibility: hidden;
+      }
+
+      .mn-toggle-label {
+        margin-left: 5px;
+        position: relative;
+        top: 2px;
+      }
+
+      .mn-input {
+        border: 2px solid transparent;
+        width: 15em;
+        height: 2.5em;
+        padding-left: 0.8em;
+        outline: none;
+        overflow: hidden;
+        background-color: ${this.surface};
+        border-radius: 10px;
+        transition: all 0.5s;
+      }
+
+      .mn-input:hover,
+      .mn-input:focus {
+        border: 2px solid ${this.primary};
+        box-shadow: 0px 0px 0px 7px rgb(${this.primary}, 20%);
+        background-color: white;
       }
     `;
 
@@ -140,7 +211,7 @@ class Popup {
   }
 
   append(child) {
-    this.child.append(child);
+    this.child.append(child.element);
   }
 
   render() {
@@ -227,9 +298,9 @@ class Popup {
 class BaseComponent {
   append(nodes) {
     if (Array.isArray(nodes)) {
-      nodes.forEach(node => this.element.append(node));
+      nodes.forEach(node => this.element.append(node.element));
     } else {
-      this.element.append(nodes);
+      this.element.append(nodes.element);
     }
   }
 
@@ -242,7 +313,7 @@ class MNColumn extends BaseComponent {
   constructor () {
     super();
     this.element = document.createElement("div");
-    this.element.setAttribute("class", "column padding");
+    this.element.setAttribute("class", "mn-column mn-padding");
   }
 }
 
@@ -250,7 +321,7 @@ class MNRow extends BaseComponent {
   constructor () {
     super();
     this.element = document.createElement("div");
-    this.element.setAttribute("class", "row padding");
+    this.element.setAttribute("class", "mn-row mn-padding");
   }
 }
 
@@ -258,7 +329,7 @@ class MNText extends BaseComponent {
   constructor (content) {
     super();
     this.element = document.createElement("span");
-    this.element.setAttribute("class", "normal-text");
+    this.element.setAttribute("class", "mn-normal-text");
     this.element.textContent = content;
   }
 
@@ -266,11 +337,86 @@ class MNText extends BaseComponent {
 }
 
 class MNSwitch extends BaseComponent {
-  constructor () {
+  constructor (title = "") {
     super();
+    this.element = document.createElement("label");
+    this.element.setAttribute("class", "mn-toggle");
+
+    this.input = document.createElement("input");
+    this.input.setAttribute("type", "checkbox");
+    this.input.setAttribute("class", "mn-toggle-checkbox");
+
+    this.sw = document.createElement("div");
+    this.sw.setAttribute("class", "mn-toggle-switch");
+
+    const label = document.createElement("span");
+    label.setAttribute("class", "mn-toggle-label");
+    label.textContent = title;
+
+    this.element.append(this.input);
+    this.element.append(this.sw);
+    this.element.append(label);
+  }
+
+  append() { }
+
+  onChange(callback) {
+    this.input.addEventListener("change", () => {
+      callback(this.input.checked);
+    });
+  }
+}
+
+class MNInput extends BaseComponent {
+  constructor (placeholder = "") {
+    super();
+    this.element = document.createElement("input");
+    this.element.setAttribute("placeholder", placeholder);
+    this.element.setAttribute("class", "mn-input");
+  }
+
+  append() { }
+
+  onChange(callback) {
+    this.element.addEventListener("input", () => {
+      callback(this.element.value);
+    });
+  }
+
+  onSummit(callback) {
+    this.element.addEventListener("change", () => {
+      this.element.blur();
+      callback(this.element.value);
+    });
+  }
+
+  onFocus(callback) {
+    this.element.addEventListener("focus", () => {
+      callback(this.element.value);
+    });
   }
 }
 
 // test
 const GUI = new MNGUI();
+
+const sw = new MNSwitch("KKKK");
+sw.onChange((checked) => {
+  console.log("Switch change", checked);
+});
+
+const input = new MNInput("Enter name");
+input.onChange((value) => {
+  console.log("Input change", value);
+});
+input.onSummit((value) => {
+  console.log("Input summit", value);
+});
+
+const row = new MNRow();
+
+row.append([sw, input]);
+
+GUI.append(row);
+
 GUI.render();
