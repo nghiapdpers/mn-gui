@@ -30,7 +30,7 @@ class Theme {
     primaryVariant = "#627a1f",
     secondary = "#c34040",
     secondaryVariant = "#c34082",
-    background = "#9E9E9E",
+    background = "#E7EAEA",
     surface = "#FAFAFA",
     error = "#D50000",
     onPrimary = "#ffffff",
@@ -128,8 +128,7 @@ class Theme {
       }
 
       .mn-input {
-        border: 2px solid transparent;
-        width: 15em;
+        border: 2px solid ${this.background};
         height: 2.5em;
         padding-left: 0.8em;
         outline: none;
@@ -142,8 +141,69 @@ class Theme {
       .mn-input:hover,
       .mn-input:focus {
         border: 2px solid ${this.primary};
-        box-shadow: 0px 0px 0px 7px rgb(${this.primary}, 20%);
-        background-color: white;
+        background-color: ${this.surface};
+      }
+
+      .mn-select {
+        display: block;
+        margin: 10px 0 8px 0;
+        padding-bottom: 2px;
+      }
+      .mn-select [type=button] {
+        background: ${this.surface};
+        border-color: ${this.primary}; 
+        border-width: 0 0 1px 0;
+        color: ${this.onSurface};
+        cursor: default;
+        display: block;
+        line-height: 48px;
+        padding: 2px 0 1px 16px;
+        position: relative;
+        text-align: left;
+        text-shadow: none;
+        z-index: 1;
+        outline: none;
+        overflow: hidden;
+      }
+      .mn-select [type=button]:focus, .mn-select [type=button]:hover {
+        background: ${this.background};
+      }
+      .mn-select [type=button]:after {
+        content: '\u25be';
+        float: right;
+        padding-right: 16px;
+      }
+      .mn-select ul[role=listbox] {
+        background-color: ${this.surface};
+        color: ${this.onSurface};
+        cursor: default;
+        list-style: none;
+        line-height: 26px;
+        overflow: hidden;
+        margin: 0;
+        max-height: 0;
+        position: absolute;
+        padding: 0;
+        transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1);
+        box-shadow: 0 1px 3px ${this.primary}, 0 1px 2px ${this.primary} !important;
+      }
+      .mn-select ul[role=listbox] li {
+        height: 48px;
+        margin: 0;
+        padding: 10px 16px;
+        outline: none;
+        overflow: hidden;
+      }
+      .mn-select ul[role=listbox] li:focus, .mn-select ul[role=listbox] li:hover, .mn-select ul[role=listbox] li.mn-active {
+        background: ${this.background};
+        color: ${this.onBackground}
+      }
+      .mn-select.mn-active ul[role=listbox] {
+        max-height: 200px;
+        overflow: auto;
+        z-index: 2;
+        transition: all .2s ease;
+        scrollbar-width: thin;
       }
     `;
 
@@ -397,26 +457,75 @@ class MNInput extends BaseComponent {
   }
 }
 
+class MNSelect extends BaseComponent {
+  constructor (placeholder = "") {
+    super();
+    this.element = document.createElement("div");
+    this.element.setAttribute("class", "mn-select");
+
+    this.button = document.createElement("button");
+    this.button.setAttribute("type", "button");
+    this.button.textContent = placeholder;
+
+    const label = document.createElement("label");
+    label.append(this.button);
+
+    this.ul = document.createElement("ul");
+    this.ul.setAttribute("role", "listbox");
+
+    this.element.append(label);
+    this.element.append(this.ul);
+  }
+
+  append() { }
+
+  setup() {
+    this.element.addEventListener("click", () => {
+      this.element.classList.toggle("mn-active");
+    });
+
+    this.ul.addEventListener("click", (e) => {
+      this.button.textContent = e.target.textContent;
+      this.ul.querySelector("li.mn-active")?.classList?.remove("mn-active");
+      if (e.target.tagName === "LI") {
+        e.target.classList.add("mn-active");
+      }
+    });
+  }
+
+  setData(data) {
+    data.forEach(item => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.setAttribute("id", item?.id);
+      li.textContent = item?.name;
+      this.ul.append(li);
+    });
+  }
+
+  onChange(callback) {
+    this.ul.addEventListener("click", (e) => {
+      callback(e.target.id, e.target.textContent);
+    });
+  }
+}
+
 // test
 const GUI = new MNGUI();
 
-const sw = new MNSwitch("KKKK");
-sw.onChange((checked) => {
-  console.log("Switch change", checked);
+const select = new MNSelect("Select");
+select.setData([
+  { id: "1", name: "Option 1" },
+  { id: "2", name: "Option 2" },
+  { id: "3", name: "Option 3" },
+  { id: "4", name: "Option 4" },
+  { id: "5", name: "Option 5" },
+  { id: "6", name: "Option 6" },
+]);
+select.setup();
+select.onChange((id, value) => {
+  console.log(id, value);
 });
 
-const input = new MNInput("Enter name");
-input.onChange((value) => {
-  console.log("Input change", value);
-});
-input.onSummit((value) => {
-  console.log("Input summit", value);
-});
-
-const row = new MNRow();
-
-row.append([sw, input]);
-
-GUI.append(row);
-
+GUI.append(select);
 GUI.render();
