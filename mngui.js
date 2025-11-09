@@ -53,17 +53,32 @@ class Theme {
     this.onError = onError;
 
     const css = `
+      :root{
+        --mn_primary: ${this.primary};
+        --mn_primaryVariant: ${this.primaryVariant};
+        --mn_secondary: ${this.secondary};
+        --mn_secondaryVariant: ${this.secondaryVariant};
+        --mn_background: ${this.background};
+        --mn_surface: ${this.surface};
+        --mn_error: ${this.error};
+        --mn_onPrimary: ${this.onPrimary};
+        --mn_onSecondary: ${this.onSecondary};
+        --mn_onBackground: ${this.onBackground};
+        --mn_onSurface: ${this.onSurface};
+        --mn_onError: ${this.onError};
+      }
+
       div.mn-column {
         display: flex;
         flex-direction: column;
-        background: ${this.surface};
+        background: var(--mn_surface);
         gap: 10px;
       }
 
       div.mn-row {
         display: flex;
         flex-direction: row;
-        background: ${this.surface};
+        background: var(--mn_surface);
         gap: 10px;
       }
 
@@ -79,10 +94,9 @@ class Theme {
         cursor: pointer;
         display: inline-block;
       }
-
       .mn-toggle-switch {
         display: inline-block;
-        background: ${this.background};
+        background: var(--mn_background);
         border-radius: 16px;
         width: 58px;
         height: 32px;
@@ -95,7 +109,7 @@ class Theme {
       }
       .mn-toggle-switch:before {
         display: block;
-        background: linear-gradient(to bottom, ${this.surface} 0%, ${this.background} 100%);
+        background: linear-gradient(to bottom, var(--mn_surface) 0%, var(--mn_background) 100%);
         border-radius: 50%;
         box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
         width: 24px;
@@ -106,21 +120,19 @@ class Theme {
         transition: left 0.25s;
       }
       .mn-toggle:hover .mn-toggle-switch:before {
-        background: linear-gradient(to bottom, ${this.surface} 0%, ${this.background} 100%);
+        background: linear-gradient(to bottom, var(--mn_surface) 0%, var(--mn_background) 100%);
         box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
       }
       .mn-toggle-checkbox:checked + .mn-toggle-switch {
-        background: ${this.primary};
+        background: var(--mn_primary);
       }
       .mn-toggle-checkbox:checked + .mn-toggle-switch:before {
         left: 30px;
       }
-
       .mn-toggle-checkbox {
         position: absolute;
         visibility: hidden;
       }
-
       .mn-toggle-label {
         margin-left: 5px;
         position: relative;
@@ -128,20 +140,19 @@ class Theme {
       }
 
       .mn-input {
-        border: 2px solid ${this.background};
+        border: 2px solid var(--mn_background);
         height: 2.5em;
         padding-left: 0.8em;
         outline: none;
         overflow: hidden;
-        background-color: ${this.surface};
+        background-color: var(--mn_surface);
         border-radius: 10px;
         transition: all 0.5s;
       }
-
       .mn-input:hover,
       .mn-input:focus {
-        border: 2px solid ${this.primary};
-        background-color: ${this.surface};
+        border: 2px solid var(--mn_primary);
+        background-color: var(--mn_surface);
       }
 
       .mn-select {
@@ -150,10 +161,10 @@ class Theme {
         padding-bottom: 2px;
       }
       .mn-select [type=button] {
-        background: ${this.surface};
-        border-color: ${this.primary}; 
+        background: var(--mn_surface);
+        border-color: var(--mn_primary); 
         border-width: 0 0 1px 0;
-        color: ${this.onSurface};
+        color: var(--mn_onSurface);
         cursor: default;
         display: block;
         line-height: 48px;
@@ -166,7 +177,7 @@ class Theme {
         overflow: hidden;
       }
       .mn-select [type=button]:focus, .mn-select [type=button]:hover {
-        background: ${this.background};
+        background: var(--mn_background);
       }
       .mn-select [type=button]:after {
         content: '\u25be';
@@ -174,8 +185,8 @@ class Theme {
         padding-right: 16px;
       }
       .mn-select ul[role=listbox] {
-        background-color: ${this.surface};
-        color: ${this.onSurface};
+        background-color: var(--mn_surface);
+        color: var(--mn_onSurface);
         cursor: default;
         list-style: none;
         line-height: 26px;
@@ -185,7 +196,7 @@ class Theme {
         position: absolute;
         padding: 0;
         transition: all 0.15s cubic-bezier(0.35, 0, 0.25, 1);
-        box-shadow: 0 1px 3px ${this.primary}, 0 1px 2px ${this.primary} !important;
+        box-shadow: 0 1px 3px var(--primary), 0 1px 2px var(--primary) !important;
       }
       .mn-select ul[role=listbox] li {
         height: 48px;
@@ -195,8 +206,8 @@ class Theme {
         overflow: hidden;
       }
       .mn-select ul[role=listbox] li:focus, .mn-select ul[role=listbox] li:hover, .mn-select ul[role=listbox] li.mn-active {
-        background: ${this.background};
-        color: ${this.onBackground}
+        background: var(--mn_background);
+        color: var(--mn_onBackground)
       }
       .mn-select.mn-active ul[role=listbox] {
         max-height: 200px;
@@ -204,6 +215,44 @@ class Theme {
         z-index: 2;
         transition: all .2s ease;
         scrollbar-width: thin;
+      }
+
+      .mn-button {
+        padding: 10px 15px;
+        border: 2px solid var(--mn_primary);
+        background-color: var(--mn_surface);
+        color: var(--mn_onSurface);
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 30px;
+        transition: all 0.4s ease;
+        outline: none;
+        position: relative;
+        overflow: hidden;
+        font-weight: bold;
+      }
+      .mn-button::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.25) 0%,
+          rgba(255, 255, 255, 0) 70%
+        );
+        transform: scale(0);
+        transition: transform 0.5s ease;
+      }
+      .mn-button:hover::after {
+        transform: scale(4);
+      }
+      .mn-button:hover {
+        border-color: var(--mn_primary);
+        background: var(--mn_primary);
+        color: var(--mn_onPrimary);
       }
     `;
 
@@ -271,7 +320,8 @@ class Popup {
   }
 
   append(child) {
-    this.child.append(child.element);
+    if (Array.isArray(child)) child.forEach(c => this.child.append(c.element));
+    else this.child.append(child.element);
   }
 
   render() {
@@ -366,6 +416,10 @@ class BaseComponent {
 
   style(css) {
     this.element.setAttribute("style", css);
+  }
+
+  destroy() {
+    this.element.remove();
   }
 }
 
@@ -510,22 +564,19 @@ class MNSelect extends BaseComponent {
   }
 }
 
-// test
-const GUI = new MNGUI();
+class MNButton extends BaseComponent {
+  constructor (title = "") {
+    super();
+    this.element = document.createElement("button");
+    this.element.setAttribute("class", "mn-button");
+    this.element.textContent = title;
+  }
 
-const select = new MNSelect("Select");
-select.setData([
-  { id: "1", name: "Option 1" },
-  { id: "2", name: "Option 2" },
-  { id: "3", name: "Option 3" },
-  { id: "4", name: "Option 4" },
-  { id: "5", name: "Option 5" },
-  { id: "6", name: "Option 6" },
-]);
-select.setup();
-select.onChange((id, value) => {
-  console.log(id, value);
-});
+  append() { }
 
-GUI.append(select);
-GUI.render();
+  onClick(callback) {
+    this.element.addEventListener("click", (e) => {
+      callback(e);
+    });
+  }
+}
