@@ -1,14 +1,3 @@
-// ==UserScript==
-// @name         mnGUI
-// @namespace    http://tampermonkey.net/
-// @version      beta-0.1
-// @description  madnad custom GUI
-// @author       madnad
-// @match        https://*.jsonformatter.org/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=jsonformatter.org/
-// @grant        none
-// ==/UserScript==
-
 class MNGUI {
   constructor () {
     this.theme = new Theme();
@@ -17,6 +6,22 @@ class MNGUI {
 
   append(child) {
     this.popup.append(child);
+  }
+
+  setNavigator(navigator) {
+    this.navigator = navigator;
+    this.navigator.currentScreen.component.show();
+    this.popup.append(this.navigator.currentScreen.component);
+  }
+
+  navigationTo(name) {
+    this.navigator.navigation(name);
+    this.popup.append(this.navigator.currentScreen.component);
+  }
+
+  back() {
+    this.navigator.back();
+    this.popup.append(this.navigator.currentScreen.component);
   }
 
   render() {
@@ -254,6 +259,22 @@ class Theme {
         background: var(--mn_primary);
         color: var(--mn_onPrimary);
       }
+
+      .mn-screen {
+        width: 100%;
+        height: 100%;
+        background: var(--mn_surface);
+        opacity: 0;
+        transform: translateX(40px);
+        transition: all 0.3s ease;
+        display: none;
+      }
+
+      .mn-screen.show {
+        opacity: 1;
+        transform: translateX(0);
+        display: block;
+      }
     `;
 
     const style = document.createElement("style");
@@ -406,43 +427,55 @@ class Popup {
 }
 
 class BaseComponent {
+  constructor (element) {
+    this.element = element;
+  }
   append(nodes) {
     if (Array.isArray(nodes)) {
       nodes.forEach(node => this.element.append(node.element));
     } else {
       this.element.append(nodes.element);
     }
+
+    return this;
   }
 
   style(css) {
     this.element.setAttribute("style", css);
+    return this;
   }
 
   destroy() {
     this.element.remove();
   }
+
+  clone() {
+    const cloneElement = this.element.cloneNode(true);
+    const clonedInstance = new this.constructor();
+
+    clonedInstance.element = cloneElement;
+
+    return clonedInstance;
+  }
 }
 
 class MNColumn extends BaseComponent {
   constructor () {
-    super();
-    this.element = document.createElement("div");
+    super(document.createElement("div"));
     this.element.setAttribute("class", "mn-column mn-padding");
   }
 }
 
 class MNRow extends BaseComponent {
   constructor () {
-    super();
-    this.element = document.createElement("div");
+    super(document.createElement("div"));
     this.element.setAttribute("class", "mn-row mn-padding");
   }
 }
 
 class MNText extends BaseComponent {
   constructor (content) {
-    super();
-    this.element = document.createElement("span");
+    super(document.createElement("span"));
     this.element.setAttribute("class", "mn-normal-text");
     this.element.textContent = content;
   }
@@ -452,8 +485,7 @@ class MNText extends BaseComponent {
 
 class MNSwitch extends BaseComponent {
   constructor (title = "") {
-    super();
-    this.element = document.createElement("label");
+    super(document.createElement("label"));
     this.element.setAttribute("class", "mn-toggle");
 
     this.input = document.createElement("input");
@@ -478,13 +510,22 @@ class MNSwitch extends BaseComponent {
     this.input.addEventListener("change", () => {
       callback(this.input.checked);
     });
+
+    return this;
+  }
+
+  clone() {
+    const clonedInstance = super.clone();
+    clonedInstance.input = this.input.cloneNode(true);
+    clonedInstance.sw = this.sw.cloneNode(true);
+    clonedInstance.label = this.label.cloneNode(true);
+    return clonedInstance;
   }
 }
 
 class MNInput extends BaseComponent {
   constructor (placeholder = "") {
-    super();
-    this.element = document.createElement("input");
+    super(document.createElement("input"));
     this.element.setAttribute("placeholder", placeholder);
     this.element.setAttribute("class", "mn-input");
   }
@@ -495,6 +536,8 @@ class MNInput extends BaseComponent {
     this.element.addEventListener("input", () => {
       callback(this.element.value);
     });
+
+    return this;
   }
 
   onSummit(callback) {
@@ -502,19 +545,22 @@ class MNInput extends BaseComponent {
       this.element.blur();
       callback(this.element.value);
     });
+
+    return this;
   }
 
   onFocus(callback) {
     this.element.addEventListener("focus", () => {
       callback(this.element.value);
     });
+
+    return this;
   }
 }
 
 class MNSelect extends BaseComponent {
   constructor (placeholder = "") {
-    super();
-    this.element = document.createElement("div");
+    super(document.createElement("div"));
     this.element.setAttribute("class", "mn-select");
 
     this.button = document.createElement("button");
@@ -545,6 +591,8 @@ class MNSelect extends BaseComponent {
         e.target.classList.add("mn-active");
       }
     });
+
+    return this;
   }
 
   setData(data) {
@@ -555,19 +603,29 @@ class MNSelect extends BaseComponent {
       li.textContent = item?.name;
       this.ul.append(li);
     });
+
+    return this;
   }
 
   onChange(callback) {
     this.ul.addEventListener("click", (e) => {
       callback(e.target.id, e.target.textContent);
     });
+
+    return this;
+  }
+
+  clone() {
+    const clonedInstance = super.clone();
+    clonedInstance.button = this.button.cloneNode(true);
+    clonedInstance.ul = this.ul.cloneNode(true);
+    return clonedInstance;
   }
 }
 
 class MNButton extends BaseComponent {
   constructor (title = "") {
-    super();
-    this.element = document.createElement("button");
+    super(document.createElement("button"));
     this.element.setAttribute("class", "mn-button");
     this.element.textContent = title;
   }
@@ -578,5 +636,50 @@ class MNButton extends BaseComponent {
     this.element.addEventListener("click", (e) => {
       callback(e);
     });
+
+    return this;
   }
 }
+
+class MNScreen extends BaseComponent {
+  constructor () {
+    super(document.createElement("div"));
+    this.element.classList.add("mn-screen");
+  }
+
+  show() {
+    this.element.classList.add("show");
+  }
+
+  hide() {
+    this.element.classList.remove("show");
+  }
+
+  style() { }
+}
+
+const mngui = new MNGUI();
+
+const homeScreen = new MNScreen();
+const backButton = new MNButton("Back");
+
+const goToProfileButton = new MNButton("Go to Profile");
+goToProfileButton.onClick(() => mngui.navigationTo("profile"));
+homeScreen.append(new MNText("Home"));
+homeScreen.append(goToProfileButton);
+homeScreen.append(backButton.clone().onClick(() => mngui.back()));
+
+const profileScreen = new MNScreen();
+const goToHomeButton = new MNButton("Go to Home");
+goToHomeButton.onClick(() => mngui.navigationTo("home"));
+profileScreen.append(new MNText("Profile"));
+profileScreen.append(goToHomeButton);
+profileScreen.append(backButton.clone().onClick(() => mngui.back()));
+
+const nav = new StackNavigator([
+  { name: "home", component: homeScreen },
+  { name: "profile", component: profileScreen },
+], "home");
+
+mngui.setNavigator(nav);
+mngui.render();
