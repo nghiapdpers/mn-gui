@@ -14,7 +14,7 @@ class MNGUI {
     this.popup.append(this.navigator.currentScreen.component);
   }
 
-  navigationTo(name) {
+  navigation(name) {
     this.navigator.navigation(name);
     this.popup.append(this.navigator.currentScreen.component);
   }
@@ -664,14 +664,14 @@ const homeScreen = new MNScreen();
 const backButton = new MNButton("Back");
 
 const goToProfileButton = new MNButton("Go to Profile");
-goToProfileButton.onClick(() => mngui.navigationTo("profile"));
+goToProfileButton.onClick(() => mngui.navigation("profile"));
 homeScreen.append(new MNText("Home"));
 homeScreen.append(goToProfileButton);
 homeScreen.append(backButton.clone().onClick(() => mngui.back()));
 
 const profileScreen = new MNScreen();
 const goToHomeButton = new MNButton("Go to Home");
-goToHomeButton.onClick(() => mngui.navigationTo("home"));
+goToHomeButton.onClick(() => mngui.navigation("home"));
 profileScreen.append(new MNText("Profile"));
 profileScreen.append(goToHomeButton);
 profileScreen.append(backButton.clone().onClick(() => mngui.back()));
