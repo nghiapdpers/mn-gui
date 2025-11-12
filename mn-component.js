@@ -16,11 +16,13 @@ class MNGUI {
 
   navigation(name) {
     this.navigator.navigation(name);
+    this.popup.child.innerHTML = "";
     this.popup.append(this.navigator.currentScreen.component);
   }
 
   back() {
     this.navigator.back();
+    this.popup.child.innerHTML = "";
     this.popup.append(this.navigator.currentScreen.component);
   }
 
@@ -261,19 +263,35 @@ class Theme {
       }
 
       .mn-screen {
+        position: absolute;
+        padding: 10px;
+        inset: 0;
         width: 100%;
         height: 100%;
         background: var(--mn_surface);
         opacity: 0;
-        transform: translateX(40px);
-        transition: all 0.3s ease;
-        display: none;
+        transform: translateX(0);
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
-
       .mn-screen.show {
         opacity: 1;
-        transform: translateX(0);
-        display: block;
+        pointer-events: auto;
+        z-index: 2;
+      }
+      .mn-screen.enter-from-right {
+        transform: translateX(100px);
+      }
+      .mn-screen.enter-from-left {
+        transform: translateX(-100px);
+      }
+      .mn-screen.exit-to-right {
+        transform: translateX(100px);
+        opacity: 0;
+      }
+      .mn-screen.exit-to-left {
+        transform: translateX(-100px);
+        opacity: 0;
       }
     `;
 
@@ -363,7 +381,6 @@ class Popup {
                 overflow: hidden;
                 font-family: sans-serif;
                 z-index: 999999;
-                padding: 10px;
 
                 /* Animation base */
                 transform: translateY(40px);
@@ -647,15 +664,29 @@ class MNScreen extends BaseComponent {
     this.element.classList.add("mn-screen");
   }
 
-  show() {
-    this.element.classList.add("show");
+  show(direction = "right") {
+    this.element.classList.remove("exit-to-left", "exit-to-right", "enter-from-left", "enter-from-right", "show");
+
+    this.element.classList.add(direction === "right" ? "enter-from-right" : "enter-from-left");
+
+    requestAnimationFrame(() => {
+      this.element.classList.add("show");
+      this.element.classList.remove("enter-from-right", "enter-from-left");
+    });
   }
 
-  hide() {
-    this.element.classList.remove("show");
-  }
+  hide(direction = "left", callback) {
+    this.element.classList.remove("enter-from-left", "enter-from-right", "show");
 
-  style() { }
+    this.element.classList.add(direction === "left" ? "exit-to-left" : "exit-to-right");
+
+    const onEnd = () => {
+      this.element.removeEventListener("transitionend", onEnd);
+      this.element.classList.remove("exit-to-left", "exit-to-right");
+    };
+    callback();
+    this.element.addEventListener("transitionend", onEnd, { once: true });
+  }
 }
 
 const mngui = new MNGUI();
