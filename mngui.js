@@ -1,3 +1,46 @@
+class StackNavigator {
+  constructor (screens = [], initScreen = "") {
+    this.stack = [screens.find(screen => screen.name === initScreen) || screens[0]];
+    this.screenList = screens;
+  }
+
+  get currentScreen() {
+    return ({
+      ...this.stack[this.stack.length - 1],
+      screenIndex: this.stack.length - 1,
+    });
+  }
+
+  navigation(name) {
+    const screen = this.screenList.find(screen => screen.name === name);
+    if (!screen) return console.log("Screen not found");
+
+    this.currentScreen.component.hide("left", () => {
+      const screenIndex = this.stack.findIndex(screen => screen.name === name);
+      if (screenIndex > -1) {
+        for (let i = screenIndex + 1; i < this.stack.length; i++) {
+          this.stack[i].component.destroy();
+        }
+        this.stack.splice(screenIndex + 1, 1);
+        this.currentScreen.component.show("left");
+      }
+      else {
+        this.stack.push(screen);
+        this.currentScreen.component.show("right");
+      }
+    });
+  }
+
+  back() {
+    if (this.stack.length <= 1) return console.log("No screen to back");
+    this.currentScreen.component.hide("right", () => {
+      this.currentScreen.component.destroy();
+      this.stack.pop();
+      this.currentScreen.component.show("left");
+    });
+  }
+}
+
 class MNGUI {
   constructor () {
     this.theme = new Theme();
@@ -688,29 +731,3 @@ class MNScreen extends BaseComponent {
     this.element.addEventListener("transitionend", onEnd, { once: true });
   }
 }
-
-const mngui = new MNGUI();
-
-const homeScreen = new MNScreen();
-const backButton = new MNButton("Back");
-
-const goToProfileButton = new MNButton("Go to Profile");
-goToProfileButton.onClick(() => mngui.navigation("profile"));
-homeScreen.append(new MNText("Home"));
-homeScreen.append(goToProfileButton);
-homeScreen.append(backButton.clone().onClick(() => mngui.back()));
-
-const profileScreen = new MNScreen();
-const goToHomeButton = new MNButton("Go to Home");
-goToHomeButton.onClick(() => mngui.navigation("home"));
-profileScreen.append(new MNText("Profile"));
-profileScreen.append(goToHomeButton);
-profileScreen.append(backButton.clone().onClick(() => mngui.back()));
-
-const nav = new StackNavigator([
-  { name: "home", component: homeScreen },
-  { name: "profile", component: profileScreen },
-], "home");
-
-mngui.setNavigator(nav);
-mngui.render();
