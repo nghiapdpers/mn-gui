@@ -10,7 +10,6 @@ class MNGUI {
 
   setNavigator(navigator) {
     this.navigator = navigator;
-    this.navigator.currentScreen.component.show();
     this.popup.append(this.navigator.currentScreen.component);
   }
 
@@ -27,6 +26,8 @@ class MNGUI {
   }
 
   render() {
+    this.popup.onShow(() => this.navigator.currentScreen.component.show("left"));
+    this.popup.onClose(() => this.navigator.currentScreen.component.hide("right"));
     this.popup.render();
   }
 }
@@ -307,12 +308,12 @@ class Popup {
     this.theme = theme;
 
     this.popupProps = {
-      width: "300px",
-      height: "380px",
-      bottom: "80px",
+      width: "92.5vw",
+      height: "calc(92.5vh - 50px)",
+      bottom: "calc(5vh + 50px)",
       top: "",
       left: "",
-      right: "20px",
+      right: "5vw",
     };
 
     this.toggleProps = {
@@ -325,9 +326,13 @@ class Popup {
       fontSize: "20px",
     };
 
+    this.visibleToggle = true;
+
     this.icon = "🎲";
 
     this.child = document.createElement("div");
+
+    this.shortcut = "Alt + M";
   }
 
   setIcon(icon) {
@@ -361,6 +366,34 @@ class Popup {
   append(child) {
     if (Array.isArray(child)) child.forEach(c => this.child.append(c.element));
     else this.child.append(child.element);
+  }
+
+  onShow(callback) {
+    this.onShowCallback = callback;
+  }
+
+  onClose(callback) {
+    this.onCloseCallback = callback;
+  }
+
+  setShortcut(shortcut) {
+    this.shortcut = shortcut;
+  }
+
+  hideToggle() {
+    if (('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+      console.warn("This device is support touch event, so toggle will not be hidden");
+    } else {
+      this.visibleToggle = false;
+      this.popupProps = {
+        width: "95vw",
+        height: "95vh",
+        bottom: "2.5vh",
+        top: "",
+        left: "",
+        right: "2.5vw",
+      };
+    }
   }
 
   render() {
@@ -429,16 +462,48 @@ class Popup {
     document.head.insertAdjacentHTML("beforeend", style);
 
     this.child.setAttribute("id", "mngui-popup");
-    const toggleBtn = document.createElement("button");
-    toggleBtn.setAttribute("id", "mngui-toggle");
-    toggleBtn.append(this.icon);
-
     document.body.append(this.child);
-    document.body.append(toggleBtn);
 
-    toggleBtn.addEventListener("click", () => {
+    const togglePopup = () => {
       this.isOpen = !this.isOpen;
       this.child.classList.toggle("show", this.isOpen);
+      if (this.isOpen) this.onShowCallback?.();
+      else this.onCloseCallback?.();
+    };
+
+    if (this.visibleToggle) {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.setAttribute("id", "mngui-toggle");
+      toggleBtn.append(this.icon);
+
+      document.body.append(toggleBtn);
+
+      toggleBtn.addEventListener("click", togglePopup);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      // Tách các phím trong shortcut thành mảng và chuẩn hóa
+      const keys = this.shortcut.split('+').map(key => key.trim().toLowerCase());
+      const lastKey = keys[keys.length - 1];
+
+      // Kiểm tra các phím modifier
+      const hasShift = keys.includes('shift');
+      const hasCtrl = keys.includes('ctrl');
+      const hasAlt = keys.includes('alt');
+
+      // Kiểm tra phím cuối cùng (phím chính)
+      const isKeyMatch = e.key.toLowerCase() === lastKey;
+
+      // Kiểm tra tổ hợp phím
+      const isShiftMatch = hasShift === e.shiftKey;
+      const isCtrlMatch = hasCtrl === e.ctrlKey;
+      const isAltMatch = hasAlt === e.altKey;
+
+      // Nếu tất cả các điều kiện đều đúng
+      if (isKeyMatch && isShiftMatch && isCtrlMatch && isAltMatch) {
+        e.preventDefault();
+        togglePopup();
+      }
     });
   }
 }
@@ -688,29 +753,3 @@ class MNScreen extends BaseComponent {
     this.element.addEventListener("transitionend", onEnd, { once: true });
   }
 }
-
-const mngui = new MNGUI();
-
-const homeScreen = new MNScreen();
-const backButton = new MNButton("Back");
-
-const goToProfileButton = new MNButton("Go to Profile");
-goToProfileButton.onClick(() => mngui.navigation("profile"));
-homeScreen.append(new MNText("Home"));
-homeScreen.append(goToProfileButton);
-homeScreen.append(backButton.clone().onClick(() => mngui.back()));
-
-const profileScreen = new MNScreen();
-const goToHomeButton = new MNButton("Go to Home");
-goToHomeButton.onClick(() => mngui.navigation("home"));
-profileScreen.append(new MNText("Profile"));
-profileScreen.append(goToHomeButton);
-profileScreen.append(backButton.clone().onClick(() => mngui.back()));
-
-const nav = new StackNavigator([
-  { name: "home", component: homeScreen },
-  { name: "profile", component: profileScreen },
-], "home");
-
-mngui.setNavigator(nav);
-mngui.render();
