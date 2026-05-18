@@ -673,6 +673,15 @@
       this.icon = "🎲";
       this.child = document.createElement("div");
       this.shortcut = "Alt + M";
+      this.title = "MNGUI Panel";
+    }
+
+    setTitle(title) {
+      this.title = title;
+      const titleEl = this.child.querySelector(".mngui-title");
+      if (titleEl) {
+        titleEl.textContent = title;
+      }
     }
 
     setIcon(icon) {
@@ -877,7 +886,7 @@
       
       const titleSpan = document.createElement("span");
       titleSpan.setAttribute("class", "mngui-title");
-      titleSpan.textContent = "MNGUI Panel";
+      titleSpan.textContent = this.title;
       
       const closeBtn = document.createElement("button");
       closeBtn.setAttribute("class", "mngui-close-btn");
