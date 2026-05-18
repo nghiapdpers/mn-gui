@@ -1005,8 +1005,7 @@
           }
         }
         render() {
-          const style = `
-      <style>
+          const css = `
         #mngui-popup {
           position: fixed;
           bottom: ${this.popupProps.bottom || "80px"};
@@ -1075,9 +1074,10 @@
         #mngui-toggle:active {
           transform: scale(0.95);
         }
-      </style>
     `;
-          getShadowRoot().insertAdjacentHTML("beforeend", style);
+          const styleEl = document.createElement("style");
+          styleEl.textContent = css;
+          getShadowRoot().append(styleEl);
           this.child.setAttribute("id", "mngui-popup");
           this.header = document.createElement("div");
           this.header.setAttribute("id", "mngui-header");
