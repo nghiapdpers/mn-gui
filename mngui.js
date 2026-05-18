@@ -1,6 +1,6 @@
 /**
  * MNGUI - Lightweight, Premium Userscript Layout Library
- * Version: 2.0.0
+ * Version: 3.0.0
  * Author: Nghiapd & Antigravity
  */
 (function (root, factory) {
