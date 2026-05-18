@@ -37,6 +37,9 @@ jobs:
           mkdir -p ../temp_build
           cp -r mngui.js mngui.min.js dist/ ../temp_build/
           
+          # Khôi phục trạng thái làm việc sạch sẽ để tránh xung đột khi chuyển nhánh
+          git reset --hard
+          
           # Lấy danh sách tất cả các nhánh từ remote
           git fetch origin
           
