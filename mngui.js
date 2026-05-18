@@ -245,8 +245,9 @@
   var init_Theme = __esm({
     "src/core/Theme.js"() {
       init_BaseComponent();
+      init_StatePersistence();
       Theme = class {
-        constructor(primary = "#10b981", primaryVariant = "#059669", secondary = "#f59e0b", secondaryVariant = "#d97706", background = "#f4fcf7", surface = "rgba(255, 255, 255, 0.8)", error = "#ef4444", onPrimary = "#ffffff", onSecondary = "#ffffff", onBackground = "#064e3b", onSurface = "#064e3b", onError = "#ffffff") {
+        constructor(primary = "#10b981", primaryVariant = "#059669", secondary = "#f59e0b", secondaryVariant = "#d97706", background = "#f4fcf7", surface = "rgba(255, 255, 255, 0.8)", error = "#ef4444", onPrimary = "#ffffff", onSecondary = "#ffffff", onBackground = "#0f172a", onSurface = "#0f172a", onError = "#ffffff") {
           this.primary = primary;
           this.primaryVariant = primaryVariant;
           this.secondary = secondary;
@@ -259,46 +260,8 @@
           this.onBackground = onBackground;
           this.onSurface = onSurface;
           this.onError = onError;
-          const variablesCss = `
-      :root {
-        --mn_primary: ${this.primary};
-        --mn_primaryVariant: ${this.primaryVariant};
-        --mn_secondary: ${this.secondary};
-        --mn_secondaryVariant: ${this.secondaryVariant};
-        --mn_background: ${this.background};
-        --mn_surface: ${this.surface};
-        --mn_surface_solid: #ffffff;
-        --mn_error: ${this.error};
-        --mn_onPrimary: ${this.onPrimary};
-        --mn_onSecondary: ${this.onSecondary};
-        --mn_onBackground: ${this.onBackground};
-        --mn_onSurface: ${this.onSurface};
-        --mn_onError: ${this.onError};
-        --mn_border: rgba(0, 0, 0, 0.08);
-        --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-        --mn_radius: 12px;
-        --mn_font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --mn_background: #022c22;
-          --mn_surface: rgba(6, 78, 59, 0.85);
-          --mn_surface_solid: #064e3b;
-          --mn_border: rgba(255, 255, 255, 0.08);
-          --mn_onBackground: #f0fdf4;
-          --mn_onSurface: #f0fdf4;
-          --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        }
-      }
-    `;
-          let varStyle = document.getElementById("mngui-theme-variables");
-          if (!varStyle) {
-            varStyle = document.createElement("style");
-            varStyle.setAttribute("id", "mngui-theme-variables");
-            document.head.append(varStyle);
-          }
-          varStyle.textContent = variablesCss;
+          this.mode = StatePersistence.get("mngui_theme_mode") || "auto";
+          this.applyVariables();
           const css = `
       * {
         box-sizing: border-box;
@@ -861,10 +824,155 @@
         opacity: 0.8;
         text-transform: uppercase;
       }
+
+      /* MNImage */
+      .mn-image-container { position: relative; display: inline-block; width: 100%; border-radius: var(--mn_radius); overflow: hidden; background: rgba(0,0,0,0.05); }
+      .mn-image { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s; }
+      .mn-image.mn-loaded { opacity: 1; }
+      .mn-image-error { display: flex; align-items: center; justify-content: center; background: var(--mn_surface); color: var(--mn_error); font-family: var(--mn_font); font-size: 13px; padding: 20px; text-align: center; }
+      .mn-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.15) 37%, rgba(0,0,0,0.06) 63%); background-size: 400% 100%; animation: mn-skeleton-loading 1.4s ease infinite; }
+      @keyframes mn-skeleton-loading { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+      /* MNTabs */
+      .mn-tabs-container { display: flex; flex-direction: column; width: 100%; font-family: var(--mn_font); }
+      .mn-tabs-header { display: flex; border-bottom: 2px solid var(--mn_border); gap: 16px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+      .mn-tabs-header::-webkit-scrollbar { display: none; }
+      .mn-tab-btn { background: transparent; border: none; padding: 8px 4px; font-size: 14px; font-weight: 600; color: var(--mn_onSurface); opacity: 0.6; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; white-space: nowrap; }
+      .mn-tab-btn:hover { opacity: 1; }
+      .mn-tab-btn.mn-active { opacity: 1; color: var(--mn_primary); border-bottom-color: var(--mn_primary); }
+      .mn-tab-pane { display: none; flex-direction: column; gap: 12px; animation: mn-fade-in 0.3s ease; }
+      .mn-tab-pane.mn-active { display: flex; }
+      @keyframes mn-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* MNTextArea */
+      .mn-textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--mn_border); border-radius: var(--mn_radius); background: var(--mn_background); color: var(--mn_onSurface); font-family: var(--mn_font); font-size: 14px; resize: none; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+      .mn-textarea:focus { outline: none; border-color: var(--mn_primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); background: var(--mn_surface_solid); }
+      
+      /* MNProgressBar */
+      .mn-progress-container { display: flex; align-items: center; gap: 12px; width: 100%; font-family: var(--mn_font); }
+      .mn-progress-bar { flex: 1; height: 8px; background: var(--mn_border); border-radius: 4px; overflow: hidden; }
+      .mn-progress-fill { height: 100%; background: var(--mn_primary); border-radius: 4px; transition: width 0.3s ease; }
+      .mn-progress-label { font-size: 13px; font-weight: 600; color: var(--mn_onSurface); min-width: 40px; text-align: right; }
+
+      /* MNSpinner */
+      .mn-spinner { border: 3px solid var(--mn_border); border-radius: 50%; border-top-color: var(--mn_primary); animation: mn-spin 1s linear infinite; }
+      @keyframes mn-spin { to { transform: rotate(360deg); } }
+
+      /* MNTooltip */
+      .mn-tooltip-wrapper { position: relative; display: inline-block; }
+      .mn-tooltip { position: absolute; background: var(--mn_onSurface); color: var(--mn_background); padding: 6px 10px; font-size: 12px; font-weight: 500; font-family: var(--mn_font); border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transform: scale(0.95); transition: all 0.2s; z-index: 100; box-shadow: var(--mn_shadow); }
+      .mn-tooltip-wrapper:hover > .mn-tooltip { opacity: 1; transform: scale(1); }
+      .mn-tooltip.top { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) scale(0.95); }
+      .mn-tooltip.bottom { top: calc(100% + 8px); left: 50%; transform: translateX(-50%) scale(0.95); }
+      .mn-tooltip.left { right: calc(100% + 8px); top: 50%; transform: translateY(-50%) scale(0.95); }
+      .mn-tooltip.right { left: calc(100% + 8px); top: 50%; transform: translateY(-50%) scale(0.95); }
+      .mn-tooltip-wrapper:hover > .mn-tooltip.top, .mn-tooltip-wrapper:hover > .mn-tooltip.bottom { transform: translateX(-50%) scale(1); }
+      .mn-tooltip-wrapper:hover > .mn-tooltip.left, .mn-tooltip-wrapper:hover > .mn-tooltip.right { transform: translateY(-50%) scale(1); }
+
+      /* MNRadioGroup */
+      .mn-radio-group { display: flex; flex-direction: column; gap: 10px; width: 100%; font-family: var(--mn_font); }
+      .mn-radio-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: var(--mn_onSurface); font-weight: 500; user-select: none; position: relative; }
+      .mn-radio-input { position: absolute; opacity: 0; width: 0; height: 0; }
+      .mn-radio-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--mn_border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+      .mn-radio-dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--mn_primary); transform: scale(0); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+      .mn-radio-input:checked ~ .mn-radio-dot { border-color: var(--mn_primary); }
+      .mn-radio-input:checked ~ .mn-radio-dot::after { transform: scale(1); }
+
+      /* MNTable */
+      .mn-table-wrapper { width: 100%; overflow-x: auto; border-radius: var(--mn_radius); border: 1px solid var(--mn_border); background: var(--mn_surface); }
+      .mn-table { width: 100%; border-collapse: collapse; text-align: left; font-family: var(--mn_font); font-size: 13px; color: var(--mn_onSurface); }
+      .mn-table th { padding: 12px 16px; font-weight: 600; border-bottom: 1px solid var(--mn_border); background: rgba(0,0,0,0.02); white-space: nowrap; }
+      .mn-table td { padding: 10px 16px; border-bottom: 1px solid var(--mn_border); }
+      .mn-table tr:last-child td { border-bottom: none; }
+      .mn-table tr:hover td { background: rgba(0,0,0,0.02); }
+
+      /* MNDialog */
+      .mn-dialog-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+      .mn-dialog-overlay.mn-show { opacity: 1; pointer-events: auto; }
+      .mn-dialog { background: var(--mn_surface_solid); border: 1px solid var(--mn_border); border-radius: var(--mn_radius); padding: 20px; width: 90%; max-width: 320px; box-shadow: var(--mn_shadow); transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 12px; font-family: var(--mn_font); }
+      .mn-dialog-overlay.mn-show .mn-dialog { transform: scale(1); }
+      .mn-dialog-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--mn_onSurface); }
+      .mn-dialog-message { margin: 0; font-size: 14px; color: var(--mn_onSurface); opacity: 0.9; line-height: 1.5; }
+      .mn-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
     `;
           const style = document.createElement("style");
           style.textContent = css;
           getShadowRoot().append(style);
+        }
+        setMode(mode) {
+          this.mode = mode;
+          StatePersistence.set("mngui_theme_mode", mode);
+          this.applyVariables();
+        }
+        toggleMode() {
+          if (this.mode === "auto") {
+            const isSystemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            this.setMode(isSystemDark ? "light" : "dark");
+          } else {
+            this.setMode(this.mode === "dark" ? "light" : "dark");
+          }
+        }
+        applyVariables() {
+          const variablesCss = `
+      :host {
+        --mn_primary: ${this.primary};
+        --mn_primaryVariant: ${this.primaryVariant};
+        --mn_secondary: ${this.secondary};
+        --mn_secondaryVariant: ${this.secondaryVariant};
+        --mn_background: ${this.background};
+        --mn_surface: ${this.surface};
+        --mn_surface_solid: #ffffff;
+        --mn_error: ${this.error};
+        --mn_onPrimary: ${this.onPrimary};
+        --mn_onSecondary: ${this.onSecondary};
+        --mn_onBackground: ${this.onBackground};
+        --mn_onSurface: ${this.onSurface};
+        --mn_onError: ${this.onError};
+        --mn_border: rgba(0, 0, 0, 0.08);
+        --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        --mn_radius: 12px;
+        --mn_font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      /* Slate Dark Mode - Auto */
+      @media (prefers-color-scheme: dark) {
+        :host(:not([data-theme="light"])) {
+          --mn_background: #0f172a;
+          --mn_surface: rgba(30, 41, 59, 0.85);
+          --mn_surface_solid: #1e293b;
+          --mn_border: rgba(255, 255, 255, 0.1);
+          --mn_onBackground: #f8fafc;
+          --mn_onSurface: #f8fafc;
+          --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+        }
+      }
+
+      /* Slate Dark Mode - Explicit */
+      :host([data-theme="dark"]) {
+        --mn_background: #0f172a;
+        --mn_surface: rgba(30, 41, 59, 0.85);
+        --mn_surface_solid: #1e293b;
+        --mn_border: rgba(255, 255, 255, 0.1);
+        --mn_onBackground: #f8fafc;
+        --mn_onSurface: #f8fafc;
+        --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      }
+    `;
+          const hostElement = document.getElementById("mngui-root-container");
+          if (hostElement) {
+            if (this.mode === "auto") {
+              hostElement.removeAttribute("data-theme");
+            } else {
+              hostElement.setAttribute("data-theme", this.mode);
+            }
+          }
+          let varStyle = getShadowRoot().querySelector("#mngui-theme-variables");
+          if (!varStyle) {
+            varStyle = document.createElement("style");
+            varStyle.setAttribute("id", "mngui-theme-variables");
+            getShadowRoot().append(varStyle);
+          }
+          varStyle.textContent = variablesCss;
         }
       };
     }
@@ -1084,11 +1192,26 @@
           const titleSpan = document.createElement("span");
           titleSpan.setAttribute("class", "mngui-title");
           titleSpan.textContent = this.title;
+          const controlsContainer = document.createElement("div");
+          controlsContainer.style.display = "flex";
+          controlsContainer.style.alignItems = "center";
+          controlsContainer.style.gap = "4px";
+          const themeBtn = document.createElement("button");
+          themeBtn.setAttribute("class", "mngui-close-btn");
+          themeBtn.innerHTML = "\u{1F313}";
+          themeBtn.title = "Toggle Light/Dark Mode";
+          themeBtn.addEventListener("click", () => {
+            if (this.theme && typeof this.theme.toggleMode === "function") {
+              this.theme.toggleMode();
+            }
+          });
           const closeBtn = document.createElement("button");
           closeBtn.setAttribute("class", "mngui-close-btn");
           closeBtn.innerHTML = "\xD7";
+          controlsContainer.append(themeBtn);
+          controlsContainer.append(closeBtn);
           this.header.append(titleSpan);
-          this.header.append(closeBtn);
+          this.header.append(controlsContainer);
           this.child.append(this.header);
           getShadowRoot().append(this.child);
           const togglePopup = () => {
@@ -1798,6 +1921,425 @@
     }
   });
 
+  // src/components/MNImage.js
+  var MNImage;
+  var init_MNImage = __esm({
+    "src/components/MNImage.js"() {
+      init_BaseComponent();
+      MNImage = class extends BaseComponent {
+        constructor(src = "", alt = "", objectFit = "cover") {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-image-container");
+          this.img = document.createElement("img");
+          this.img.setAttribute("class", "mn-image");
+          this.img.setAttribute("alt", alt);
+          this.img.style.objectFit = objectFit;
+          this.skeleton = document.createElement("div");
+          this.skeleton.setAttribute("class", "mn-skeleton");
+          this.element.append(this.skeleton);
+          this.img.onload = () => {
+            this.skeleton.style.display = "none";
+            this.img.classList.add("mn-loaded");
+          };
+          this.img.onerror = () => {
+            this.skeleton.style.display = "none";
+            this.element.classList.add("mn-image-error");
+            this.element.innerHTML = `<span class="mn-error-text">Image failed to load</span>`;
+          };
+          if (src) {
+            this.img.src = src;
+            this.element.append(this.img);
+          }
+        }
+        setSrc(src) {
+          this.skeleton.style.display = "block";
+          this.img.classList.remove("mn-loaded");
+          this.element.classList.remove("mn-image-error");
+          const errSpan = this.element.querySelector(".mn-error-text");
+          if (errSpan) errSpan.remove();
+          this.img.src = src;
+          if (!this.element.contains(this.img)) {
+            this.element.append(this.img);
+          }
+          return this;
+        }
+        setObjectFit(fit) {
+          this.img.style.objectFit = fit;
+          return this;
+        }
+        setHeight(h) {
+          this.element.style.height = typeof h === "number" ? h + "px" : h;
+          return this;
+        }
+        setWidth(w) {
+          this.element.style.width = typeof w === "number" ? w + "px" : w;
+          return this;
+        }
+        onClick(callback) {
+          this.element.style.cursor = "pointer";
+          this.addEventListenerSafe(this.element, "click", callback);
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNTabs.js
+  var MNTabs;
+  var init_MNTabs = __esm({
+    "src/components/MNTabs.js"() {
+      init_BaseComponent();
+      MNTabs = class extends BaseComponent {
+        constructor(tabs = []) {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-tabs-container");
+          this.header = document.createElement("div");
+          this.header.setAttribute("class", "mn-tabs-header");
+          this.content = document.createElement("div");
+          this.content.setAttribute("class", "mn-tabs-content");
+          this.element.append(this.header);
+          this.element.append(this.content);
+          this.tabs = [];
+          this.activeTabId = null;
+          tabs.forEach((t) => this.addTab(t.id, t.title, t.component));
+        }
+        addTab(id, title, component) {
+          const tabBtn = document.createElement("button");
+          tabBtn.setAttribute("class", "mn-tab-btn");
+          tabBtn.textContent = title;
+          const tabPane = document.createElement("div");
+          tabPane.setAttribute("class", "mn-tab-pane");
+          if (component) {
+            if (Array.isArray(component)) {
+              component.forEach((c) => tabPane.append(c.element || c));
+            } else {
+              tabPane.append(component.element || component);
+            }
+          }
+          this.header.append(tabBtn);
+          this.content.append(tabPane);
+          const tabObj = { id, btn: tabBtn, pane: tabPane };
+          this.tabs.push(tabObj);
+          this.addEventListenerSafe(tabBtn, "click", () => this.setActiveTab(id));
+          if (!this.activeTabId) {
+            this.setActiveTab(id);
+          }
+          return this;
+        }
+        setActiveTab(id) {
+          this.activeTabId = id;
+          this.tabs.forEach((t) => {
+            const isActive = t.id === id;
+            t.btn.classList.toggle("mn-active", isActive);
+            t.pane.classList.toggle("mn-active", isActive);
+          });
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNTextArea.js
+  var MNTextArea;
+  var init_MNTextArea = __esm({
+    "src/components/MNTextArea.js"() {
+      init_BaseComponent();
+      MNTextArea = class extends BaseComponent {
+        constructor(placeholder = "", rows = 3) {
+          super(document.createElement("textarea"));
+          this.element.setAttribute("placeholder", placeholder);
+          this.element.setAttribute("class", "mn-textarea");
+          this.element.setAttribute("rows", rows);
+          this.addEventListenerSafe(this.element, "input", () => {
+            this.element.style.height = "auto";
+            this.element.style.height = this.element.scrollHeight + "px";
+          });
+        }
+        getValue() {
+          return this.element.value;
+        }
+        setValue(val) {
+          this.element.value = val;
+          this.element.dispatchEvent(new Event("input"));
+          return this;
+        }
+        setValueSilently(val) {
+          this.element.value = val;
+          return this;
+        }
+        onChange(callback) {
+          this.addEventListenerSafe(this.element, "input", () => callback(this.element.value));
+          return this;
+        }
+        persist(key) {
+          const StatePersistence2 = window.StatePersistence || globalThis.StatePersistence;
+          if (StatePersistence2) {
+            const saved = StatePersistence2.get(key);
+            if (saved !== null) {
+              this.setValue(saved);
+            }
+            this.onChange((val) => {
+              StatePersistence2.set(key, val);
+            });
+          }
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNProgressBar.js
+  var MNProgressBar;
+  var init_MNProgressBar = __esm({
+    "src/components/MNProgressBar.js"() {
+      init_BaseComponent();
+      MNProgressBar = class extends BaseComponent {
+        constructor(initialValue = 0, showLabel = true) {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-progress-container");
+          this.bar = document.createElement("div");
+          this.bar.setAttribute("class", "mn-progress-bar");
+          this.fill = document.createElement("div");
+          this.fill.setAttribute("class", "mn-progress-fill");
+          this.bar.append(this.fill);
+          this.element.append(this.bar);
+          this.showLabel = showLabel;
+          if (showLabel) {
+            this.label = document.createElement("div");
+            this.label.setAttribute("class", "mn-progress-label");
+            this.element.append(this.label);
+          }
+          this.setValue(initialValue);
+        }
+        setValue(percent) {
+          const p = Math.max(0, Math.min(100, percent));
+          this.fill.style.width = `${p}%`;
+          if (this.showLabel && this.label) {
+            this.label.textContent = `${Math.round(p)}%`;
+          }
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNSpinner.js
+  var MNSpinner;
+  var init_MNSpinner = __esm({
+    "src/components/MNSpinner.js"() {
+      init_BaseComponent();
+      MNSpinner = class extends BaseComponent {
+        constructor(size = "24px", color = "var(--mn_primary)") {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-spinner");
+          this.element.style.width = size;
+          this.element.style.height = size;
+          this.element.style.borderTopColor = color;
+        }
+      };
+    }
+  });
+
+  // src/components/MNTooltip.js
+  var MNTooltip;
+  var init_MNTooltip = __esm({
+    "src/components/MNTooltip.js"() {
+      init_BaseComponent();
+      MNTooltip = class extends BaseComponent {
+        constructor(targetComponent, text, position = "top") {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-tooltip-wrapper");
+          this.tooltipText = document.createElement("div");
+          this.tooltipText.setAttribute("class", `mn-tooltip ${position}`);
+          this.tooltipText.textContent = text;
+          if (targetComponent && targetComponent.element) {
+            this.element.append(targetComponent.element);
+          } else if (targetComponent instanceof HTMLElement) {
+            this.element.append(targetComponent);
+          }
+          this.element.append(this.tooltipText);
+        }
+      };
+    }
+  });
+
+  // src/components/MNRadioGroup.js
+  var MNRadioGroup;
+  var init_MNRadioGroup = __esm({
+    "src/components/MNRadioGroup.js"() {
+      init_BaseComponent();
+      MNRadioGroup = class extends BaseComponent {
+        constructor(options = [], selectedValue = "") {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-radio-group");
+          this.radios = [];
+          options.forEach((opt) => {
+            const label = document.createElement("label");
+            label.setAttribute("class", "mn-radio-label");
+            const input = document.createElement("input");
+            input.setAttribute("type", "radio");
+            input.setAttribute("class", "mn-radio-input");
+            input.setAttribute("name", "mn-radio-" + Math.random().toString(36).substr(2, 9));
+            input.setAttribute("value", opt.value);
+            if (opt.value === selectedValue) input.checked = true;
+            const dot = document.createElement("span");
+            dot.setAttribute("class", "mn-radio-dot");
+            const text = document.createElement("span");
+            text.textContent = opt.label;
+            label.append(input);
+            label.append(dot);
+            label.append(text);
+            this.element.append(label);
+            this.radios.push(input);
+            this.addEventListenerSafe(input, "change", () => {
+              if (input.checked) {
+                this.element.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            });
+          });
+        }
+        getValue() {
+          const checked = this.radios.find((r) => r.checked);
+          return checked ? checked.value : null;
+        }
+        setValue(val) {
+          const radio = this.radios.find((r) => r.value === val);
+          if (radio) {
+            radio.checked = true;
+            this.element.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          return this;
+        }
+        setValueSilently(val) {
+          const radio = this.radios.find((r) => r.value === val);
+          if (radio) radio.checked = true;
+          return this;
+        }
+        onChange(callback) {
+          this.addEventListenerSafe(this.element, "change", () => {
+            callback(this.getValue());
+          });
+          return this;
+        }
+        persist(key) {
+          const StatePersistence2 = window.StatePersistence || globalThis.StatePersistence;
+          if (StatePersistence2) {
+            const saved = StatePersistence2.get(key);
+            if (saved !== null) {
+              this.setValueSilently(saved);
+            }
+            this.onChange((val) => {
+              StatePersistence2.set(key, val);
+            });
+          }
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNTable.js
+  var MNTable;
+  var init_MNTable = __esm({
+    "src/components/MNTable.js"() {
+      init_BaseComponent();
+      MNTable = class extends BaseComponent {
+        constructor(columns = [], data = []) {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-table-wrapper");
+          this.table = document.createElement("table");
+          this.table.setAttribute("class", "mn-table");
+          this.thead = document.createElement("thead");
+          this.tbody = document.createElement("tbody");
+          this.table.append(this.thead);
+          this.table.append(this.tbody);
+          this.element.append(this.table);
+          this.columns = columns;
+          this.renderHeader();
+          this.setData(data);
+        }
+        renderHeader() {
+          this.thead.innerHTML = "";
+          const tr = document.createElement("tr");
+          this.columns.forEach((col) => {
+            const th = document.createElement("th");
+            th.textContent = col.label;
+            if (col.width) th.style.width = col.width;
+            tr.append(th);
+          });
+          this.thead.append(tr);
+        }
+        setData(data) {
+          this.tbody.innerHTML = "";
+          data.forEach((row) => {
+            const tr = document.createElement("tr");
+            this.columns.forEach((col) => {
+              const td = document.createElement("td");
+              td.textContent = row[col.key] !== void 0 ? row[col.key] : "";
+              tr.append(td);
+            });
+            this.tbody.append(tr);
+          });
+          return this;
+        }
+      };
+    }
+  });
+
+  // src/components/MNDialog.js
+  var MNDialog;
+  var init_MNDialog = __esm({
+    "src/components/MNDialog.js"() {
+      init_BaseComponent();
+      MNDialog = class {
+        static show({ title = "X\xE1c nh\u1EADn", message = "", confirmText = "OK", cancelText = "H\u1EE7y", onConfirm = null, onCancel = null } = {}) {
+          const overlay = document.createElement("div");
+          overlay.setAttribute("class", "mn-dialog-overlay");
+          const dialog = document.createElement("div");
+          dialog.setAttribute("class", "mn-dialog");
+          const titleEl = document.createElement("h3");
+          titleEl.setAttribute("class", "mn-dialog-title");
+          titleEl.textContent = title;
+          const msgEl = document.createElement("p");
+          msgEl.setAttribute("class", "mn-dialog-message");
+          msgEl.textContent = message;
+          const actions = document.createElement("div");
+          actions.setAttribute("class", "mn-dialog-actions");
+          const cancelBtn = document.createElement("button");
+          cancelBtn.setAttribute("class", "mn-button");
+          cancelBtn.style.borderColor = "var(--mn_border)";
+          cancelBtn.style.color = "var(--mn_onSurface)";
+          cancelBtn.textContent = cancelText;
+          const confirmBtn = document.createElement("button");
+          confirmBtn.setAttribute("class", "mn-button");
+          confirmBtn.textContent = confirmText;
+          actions.append(cancelBtn);
+          actions.append(confirmBtn);
+          dialog.append(titleEl);
+          dialog.append(msgEl);
+          dialog.append(actions);
+          overlay.append(dialog);
+          getShadowRoot().append(overlay);
+          setTimeout(() => {
+            overlay.classList.add("mn-show");
+          }, 10);
+          const close = () => {
+            overlay.classList.remove("mn-show");
+            setTimeout(() => overlay.remove(), 250);
+          };
+          cancelBtn.addEventListener("click", () => {
+            close();
+            if (onCancel) onCancel();
+          });
+          confirmBtn.addEventListener("click", () => {
+            close();
+            if (onConfirm) onConfirm();
+          });
+        }
+      };
+    }
+  });
+
   // src/index.js
   var index_exports = {};
   __export(index_exports, {
@@ -1808,17 +2350,26 @@
     MNCheckbox: () => MNCheckbox,
     MNColorPicker: () => MNColorPicker,
     MNColumn: () => MNColumn,
+    MNDialog: () => MNDialog,
     MNDivider: () => MNDivider,
     MNGUI: () => MNGUI,
+    MNImage: () => MNImage,
     MNInput: () => MNInput,
+    MNProgressBar: () => MNProgressBar,
+    MNRadioGroup: () => MNRadioGroup,
     MNRow: () => MNRow,
     MNScreen: () => MNScreen,
     MNSelect: () => MNSelect,
     MNSlider: () => MNSlider,
+    MNSpinner: () => MNSpinner,
     MNState: () => MNState,
     MNSwitch: () => MNSwitch,
+    MNTable: () => MNTable,
+    MNTabs: () => MNTabs,
     MNText: () => MNText,
+    MNTextArea: () => MNTextArea,
     MNToast: () => MNToast,
+    MNTooltip: () => MNTooltip,
     Popup: () => Popup,
     StackNavigator: () => StackNavigator,
     Theme: () => Theme,
@@ -1848,6 +2399,15 @@
       init_MNAccordion();
       init_MNColorPicker();
       init_MNToast();
+      init_MNImage();
+      init_MNTabs();
+      init_MNTextArea();
+      init_MNProgressBar();
+      init_MNSpinner();
+      init_MNTooltip();
+      init_MNRadioGroup();
+      init_MNTable();
+      init_MNDialog();
     }
   });
 
