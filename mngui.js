@@ -122,6 +122,15 @@
     }
     return mnguiShadowRoot;
   }
+  function injectStyle(id, css) {
+    const shadow = getShadowRoot();
+    if (!shadow.getElementById(id)) {
+      const style = document.createElement("style");
+      style.id = id;
+      style.textContent = css;
+      shadow.append(style);
+    }
+  }
   var mnguiShadowRoot, BaseComponent;
   var init_BaseComponent = __esm({
     "src/core/BaseComponent.js"() {
@@ -996,8 +1005,7 @@
           }
         }
         render() {
-          const style = `
-      <style>
+          const css = `
         #mngui-popup {
           position: fixed;
           bottom: ${this.popupProps.bottom || "80px"};
@@ -1066,9 +1074,10 @@
         #mngui-toggle:active {
           transform: scale(0.95);
         }
-      </style>
     `;
-          getShadowRoot().insertAdjacentHTML("beforeend", style);
+          const styleEl = document.createElement("style");
+          styleEl.textContent = css;
+          getShadowRoot().append(styleEl);
           this.child.setAttribute("id", "mngui-popup");
           this.header = document.createElement("div");
           this.header.setAttribute("id", "mngui-header");
@@ -1813,7 +1822,8 @@
     Popup: () => Popup,
     StackNavigator: () => StackNavigator,
     Theme: () => Theme,
-    getShadowRoot: () => getShadowRoot
+    getShadowRoot: () => getShadowRoot,
+    injectStyle: () => injectStyle
   });
   var init_index = __esm({
     "src/index.js"() {
