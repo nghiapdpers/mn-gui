@@ -119,17 +119,17 @@
 
   class Theme {
     constructor (
-      primary = "#6366f1",
-      primaryVariant = "#4f46e5",
-      secondary = "#ef4444",
-      secondaryVariant = "#dc2626",
-      background = "#f3f4f6",
-      surface = "rgba(255, 255, 255, 0.75)",
+      primary = "#10b981",
+      primaryVariant = "#059669",
+      secondary = "#f59e0b",
+      secondaryVariant = "#d97706",
+      background = "#f4fcf7",
+      surface = "rgba(255, 255, 255, 0.8)",
       error = "#ef4444",
       onPrimary = "#ffffff",
       onSecondary = "#ffffff",
-      onBackground = "#1f2937",
-      onSurface = "#1f2937",
+      onBackground = "#064e3b",
+      onSurface = "#064e3b",
       onError = "#ffffff"
     ) {
       this.primary = primary;
@@ -168,13 +168,13 @@
 
         @media (prefers-color-scheme: dark) {
           :root {
-            --mn_background: #111827;
-            --mn_surface: rgba(31, 41, 55, 0.8);
-            --mn_surface_solid: #1f2937;
+            --mn_background: #022c22;
+            --mn_surface: rgba(6, 78, 59, 0.85);
+            --mn_surface_solid: #064e3b;
             --mn_border: rgba(255, 255, 255, 0.08);
-            --mn_onBackground: #f9fafb;
-            --mn_onSurface: #f9fafb;
-            --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            --mn_onBackground: #f0fdf4;
+            --mn_onSurface: #f0fdf4;
+            --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
           }
         }
 
@@ -331,7 +331,7 @@
         }
         .mn-input:focus {
           border-color: var(--mn_primary);
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
           background-color: var(--mn_surface_solid);
         }
         .mn-input::placeholder {
@@ -485,7 +485,7 @@
         .mn-button:hover {
           background: var(--mn_primary);
           color: var(--mn_onPrimary);
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .mn-button:active {
           transform: scale(0.98);
@@ -852,7 +852,7 @@
             border: none;
             cursor: pointer;
             font-size: ${this.toggleProps.fontSize || "20px"};
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
             z-index: 999999;
             transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
