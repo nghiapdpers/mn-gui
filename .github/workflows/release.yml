@@ -43,6 +43,7 @@ jobs:
           
           # Khôi phục trạng thái làm việc sạch sẽ để tránh xung đột khi chuyển nhánh
           git reset --hard
+          git clean -fd
           
           # Lấy danh sách tất cả các nhánh từ remote
           git fetch origin
