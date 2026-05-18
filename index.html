@@ -8,15 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #0f172a;
-      --text-color: #f1f5f9;
-      --card-bg: #1e293b;
+      --bg-color: #022c22;
+      --text-color: #f0fdf4;
+      --card-bg: #064e3b;
     }
     
     @media (prefers-color-scheme: light) {
       :root {
-        --bg-color: #f8fafc;
-        --text-color: #0f172a;
+        --bg-color: #f0fdf4;
+        --text-color: #064e3b;
         --card-bg: #ffffff;
       }
     }
@@ -30,22 +30,22 @@
       min-height: 100vh;
       overflow-x: hidden;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(132, 204, 22, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
     }
 
     header {
       padding: 2rem;
       text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.1);
     }
 
     h1 {
       font-size: 2.5rem;
       margin: 0;
       font-weight: 800;
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 50%, #14b8a6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -85,8 +85,8 @@
     }
 
     code {
-      background: rgba(99, 102, 241, 0.1);
-      color: #6366f1;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-family: monospace;
@@ -209,30 +209,55 @@
       // Badge hiển thị phiên bản
       const infoRow = new MNRow();
       infoRow.append(new MNText("Phiên bản thư viện: "));
-      infoRow.append(new MNBadge("v2.0.0 Premium", "success"));
+      infoRow.append(new MNBadge("v3.0.0 Premium", "success"));
       mainCol.append(infoRow);
       
       // Switch Toggle và Checkbox
-      const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo").onChange((checked) => {
-        if (checked) {
-          MNToast.show("Đã kích hoạt Auto-Click quảng cáo thành công!", "success");
-        } else {
-          MNToast.show("Đã tắt chế độ Auto-Click.", "info");
-        }
-      });
+      const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo")
+        .persist("auto_click_switch")
+        .onChange((checked) => {
+          if (checked) {
+            MNToast.show("Đã kích hoạt Auto-Click quảng cáo thành công!", "success");
+          } else {
+            MNToast.show("Đã tắt chế độ Auto-Click.", "info");
+          }
+        });
       mainCol.append(autoClickSwitch);
 
-      const bypassCheckbox = new MNCheckbox("Tự động vượt Captcha liên kết", true).onChange((checked) => {
-        MNToast.show(checked ? "Đã bật vượt Captcha" : "Đã tắt vượt Captcha", checked ? "success" : "warning");
-      });
+      const bypassCheckbox = new MNCheckbox("Tự động vượt Captcha liên kết", true)
+        .persist("bypass_checkbox")
+        .onChange((checked) => {
+          MNToast.show(checked ? "Đã bật vượt Captcha" : "Đã tắt vượt Captcha", checked ? "success" : "warning");
+        });
       mainCol.append(bypassCheckbox);
       
       // Slider mới
-      const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5).onChange((value) => {
-        MNToast.show("Đã cập nhật tốc độ: " + value + " giây", "info", 1500);
-      });
+      const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5)
+        .persist("scroll_speed_slider")
+        .onChange((value) => {
+          MNToast.show("Đã cập nhật tốc độ: " + value + " giây", "info", 1500);
+        });
       mainCol.append(scrollSpeedSlider);
       
+      mainCol.append(new MNDivider());
+
+      // Premium Accordion for UI Customization (v3.0)
+      const uiAccordion = new MNAccordion("Tùy biến giao diện (v3.0)", false);
+      const themeColorPicker = new MNColorPicker("Màu chủ đạo (Theme)", "#10b981")
+        .persist("theme_accent_color")
+        .onChange((color) => {
+          document.documentElement.style.setProperty("--mn_primary", color);
+          MNToast.show("Đã đổi màu chủ đạo sang " + color, "success", 1500);
+        });
+      uiAccordion.append(themeColorPicker);
+      mainCol.append(uiAccordion);
+      
+      // Apply theme color on load
+      const savedThemeColor = themeColorPicker.getValue();
+      if (savedThemeColor) {
+        document.documentElement.style.setProperty("--mn_primary", savedThemeColor);
+      }
+
       mainCol.append(new MNDivider());
 
       // Nút điều hướng sang màn hình 2
@@ -255,13 +280,15 @@
       
       // Input văn bản
       advCol.append(new MNText("Định danh tài khoản API:").style("font-size: 13px; font-weight: 600;"));
-      const apiInput = new MNInput("Nhập API key tại đây...").onSubmit((val) => {
-        if (val.trim() === "") {
-          MNToast.show("API key không được để trống!", "error");
-        } else {
-          MNToast.show("Đã lưu API key: " + val.substring(0, 4) + "****", "success");
-        }
-      });
+      const apiInput = new MNInput("Nhập API key tại đây...")
+        .persist("api_input")
+        .onSubmit((val) => {
+          if (val.trim() === "") {
+            MNToast.show("API key không được để trống!", "error");
+          } else {
+            MNToast.show("Đã lưu API key: " + val.substring(0, 4) + "****", "success");
+          }
+        });
       advCol.append(apiInput);
       
       // Dropdown Select mới
@@ -272,11 +299,29 @@
           { id: "turbo", name: "⚡ Turbo Tốc độ cao" },
           { id: "battery", name: "🔋 Tiết kiệm Pin & Tài nguyên" }
         ])
+        .persist("mode_select")
         .onChange((id, name) => {
           MNToast.show("Đổi chế độ sang: " + name, "success");
         });
       advCol.append(modeSelect);
       
+      advCol.append(new MNDivider());
+      
+      // Demo Reactive State & Two-way Binding (v3.0.0)
+      advCol.append(new MNText("Đồng bộ dữ liệu Reactive (Hai chiều):").style("font-size: 13px; font-weight: 600; margin-top: 4px; display: block;"));
+      
+      const textState = new MNState("Thử nhập gì đó...");
+      
+      const boundInput = new MNInput("Nhập nội dung...")
+        .bind(textState);
+        
+      const boundText = new MNText("")
+        .style("font-size: 13px; color: var(--mn_primary); font-weight: 500; min-height: 20px; display: block; margin-top: 4px;")
+        .bind(textState);
+        
+      advCol.append(boundInput);
+      advCol.append(boundText);
+
       advCol.append(new MNDivider());
 
       // Hàng nút tương tác
