@@ -20,6 +20,26 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {
 
+  let mnguiShadowRoot = null;
+
+  function getShadowRoot() {
+    if (!mnguiShadowRoot) {
+      let mnguiRoot = document.getElementById("mngui-root-container");
+      if (!mnguiRoot) {
+        mnguiRoot = document.createElement("div");
+        mnguiRoot.setAttribute("id", "mngui-root-container");
+        mnguiRoot.style.position = "absolute";
+        mnguiRoot.style.width = "0";
+        mnguiRoot.style.height = "0";
+        mnguiRoot.style.overflow = "visible";
+        mnguiRoot.style.zIndex = "999999";
+        document.body.append(mnguiRoot);
+      }
+      mnguiShadowRoot = mnguiRoot.shadowRoot || mnguiRoot.attachShadow({ mode: "open" });
+    }
+    return mnguiShadowRoot;
+  }
+
   class StackNavigator {
     constructor (screens = [], initScreen = "") {
       this.stack = [screens.find(screen => screen.name === initScreen) || screens[0]];
@@ -145,7 +165,7 @@
       this.onSurface = onSurface;
       this.onError = onError;
 
-      const css = `
+      const variablesCss = `
         :root {
           --mn_primary: ${this.primary};
           --mn_primaryVariant: ${this.primaryVariant};
@@ -177,7 +197,17 @@
             --mn_shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
           }
         }
+      `;
 
+      let varStyle = document.getElementById("mngui-theme-variables");
+      if (!varStyle) {
+        varStyle = document.createElement("style");
+        varStyle.setAttribute("id", "mngui-theme-variables");
+        document.head.append(varStyle);
+      }
+      varStyle.textContent = variablesCss;
+
+      const css = `
         * {
           box-sizing: border-box;
         }
@@ -743,7 +773,7 @@
 
       const style = document.createElement("style");
       style.textContent = css;
-      document.head.append(style);
+      getShadowRoot().append(style);
     }
   }
 
@@ -978,7 +1008,7 @@
         </style>
       `;
 
-      document.head.insertAdjacentHTML("beforeend", style);
+      getShadowRoot().insertAdjacentHTML("beforeend", style);
 
       this.child.setAttribute("id", "mngui-popup");
       
@@ -998,7 +1028,7 @@
       this.header.append(closeBtn);
       this.child.append(this.header);
       
-      document.body.append(this.child);
+      getShadowRoot().append(this.child);
 
       const togglePopup = () => {
         this.isOpen = !this.isOpen;
@@ -1014,7 +1044,7 @@
         toggleBtn.setAttribute("id", "mngui-toggle");
         toggleBtn.append(this.icon);
 
-        document.body.append(toggleBtn);
+        getShadowRoot().append(toggleBtn);
         toggleBtn.addEventListener("click", togglePopup);
       }
 
@@ -1679,7 +1709,7 @@
       if (!this.container) {
         this.container = document.createElement("div");
         this.container.setAttribute("id", "mn-toast-container");
-        document.body.append(this.container);
+        getShadowRoot().append(this.container);
       }
     }
 
