@@ -243,12 +243,30 @@ export class Popup {
     titleSpan.setAttribute("class", "mngui-title");
     titleSpan.textContent = this.title;
     
+    const controlsContainer = document.createElement("div");
+    controlsContainer.style.display = "flex";
+    controlsContainer.style.alignItems = "center";
+    controlsContainer.style.gap = "4px";
+
+    const themeBtn = document.createElement("button");
+    themeBtn.setAttribute("class", "mngui-close-btn");
+    themeBtn.innerHTML = "🌓";
+    themeBtn.title = "Toggle Light/Dark Mode";
+    themeBtn.addEventListener("click", () => {
+      if (this.theme && typeof this.theme.toggleMode === 'function') {
+        this.theme.toggleMode();
+      }
+    });
+
     const closeBtn = document.createElement("button");
     closeBtn.setAttribute("class", "mngui-close-btn");
     closeBtn.innerHTML = "×";
     
+    controlsContainer.append(themeBtn);
+    controlsContainer.append(closeBtn);
+
     this.header.append(titleSpan);
-    this.header.append(closeBtn);
+    this.header.append(controlsContainer);
     this.child.append(this.header);
     
     getShadowRoot().append(this.child);

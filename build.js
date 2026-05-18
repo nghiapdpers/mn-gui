@@ -25,7 +25,16 @@ const componentMap = {
   MNDivider: 'mn-divider',
   MNAccordion: 'mn-accordion',
   MNColorPicker: 'mn-color-picker',
-  MNToast: 'mn-toast'
+  MNToast: 'mn-toast',
+  MNImage: 'mn-image',
+  MNTabs: 'mn-tabs',
+  MNTextArea: 'mn-textarea',
+  MNProgressBar: 'mn-progress-bar',
+  MNSpinner: 'mn-spinner',
+  MNTooltip: 'mn-tooltip',
+  MNRadioGroup: 'mn-radio-group',
+  MNTable: 'mn-table',
+  MNDialog: 'mn-dialog'
 };
 
 function runBuild() {
