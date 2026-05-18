@@ -23,15 +23,37 @@ jobs:
           cache: 'npm'
 
       - name: Cài đặt dependencies
-        run: npm install
+        run: npm ci
 
       - name: Biên dịch thư viện (Build)
         run: npm run build
 
       - name: Deploy lên nhánh release
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release
-          folder: .
-          clean: false
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Lưu lại các tệp build
+          mkdir -p ../temp_build
+          cp -r mngui.js mngui.min.js dist/ ../temp_build/
+          
+          # Lấy danh sách tất cả các nhánh từ remote
+          git fetch origin
+          
+          # Kiểm tra và chuyển sang nhánh release
+          if git show-ref --verify --quiet refs/remotes/origin/release; then
+            git checkout release
+            git pull origin release
+          else
+            git checkout -b release
+          fi
+          
+          # Sao chép ngược lại các tệp build vào nhánh release
+          cp -r ../temp_build/* .
+          
+          # Thêm và commit thay đổi
+          git add mngui.js mngui.min.js dist/
+          git commit -m "chore: release assets [skip ci]" || echo "Không có thay đổi để commit"
+          
+          # Push sang nhánh release
+          git push origin release
