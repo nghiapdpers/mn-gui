@@ -306,6 +306,23 @@
       advCol.append(modeSelect);
       
       advCol.append(new MNDivider());
+      
+      // Demo Reactive State & Two-way Binding (v3.0.0)
+      advCol.append(new MNText("Đồng bộ dữ liệu Reactive (Hai chiều):").style("font-size: 13px; font-weight: 600; margin-top: 4px; display: block;"));
+      
+      const textState = new MNState("Thử nhập gì đó...");
+      
+      const boundInput = new MNInput("Nhập nội dung...")
+        .bind(textState);
+        
+      const boundText = new MNText("")
+        .style("font-size: 13px; color: var(--mn_primary); font-weight: 500; min-height: 20px; display: block; margin-top: 4px;")
+        .bind(textState);
+        
+      advCol.append(boundInput);
+      advCol.append(boundText);
+
+      advCol.append(new MNDivider());
 
       // Hàng nút tương tác
       const btnRow = new MNRow();

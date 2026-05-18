@@ -2,10 +2,36 @@
 // Project: https://github.com/nghiapdpers/mn-gui
 // Definitions by: Antigravity AI Pair Programmer
 
+export class MNState<T = any> {
+  constructor(initialValue: T);
+  get value(): T;
+  set value(newValue: T);
+  subscribe(callback: (value: T) => void): () => void;
+}
+
 export class BaseComponent {
-  child: HTMLElement;
+  element: HTMLElement;
   style(cssString: string): this;
   persist(storageKey: string): this;
+  addEventListenerSafe(
+    target: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): this;
+  removeEventListenerSafe(
+    target: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions
+  ): this;
+  on(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): this;
+  bind(state: MNState): this;
+  destroy(): void;
 }
 
 export class MNColumn extends BaseComponent {
@@ -19,8 +45,9 @@ export class MNRow extends BaseComponent {
 }
 
 export class MNText extends BaseComponent {
-  constructor(text: string);
-  setText(text: string): this;
+  constructor(text?: string);
+  setValue(text: string): this;
+  getValue(): string;
 }
 
 export class MNButton extends BaseComponent {
@@ -50,14 +77,17 @@ export class MNSlider extends BaseComponent {
 }
 
 export class MNSelect extends BaseComponent {
-  constructor(text: string, items: Array<{ id: string | number; text: string }>, defaultId?: string | number);
-  onChange(callback: (id: string | number, item: { id: string | number; text: string }) => void): this;
+  constructor(placeholder?: string);
+  setData(data: Array<any>): this;
+  onChange(callback: (id: string | number, text: string) => void): this;
   getValue(): string | number;
   setValue(id: string | number): this;
 }
 
 export class MNBadge extends BaseComponent {
-  constructor(text: string, type?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info');
+  constructor(text?: string, type?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info');
+  setValue(text: string): this;
+  getValue(): string;
 }
 
 export class MNDivider extends BaseComponent {
@@ -66,7 +96,7 @@ export class MNDivider extends BaseComponent {
 
 export class MNAccordion extends BaseComponent {
   constructor(title: string, isExpanded?: boolean);
-  append(component: BaseComponent | HTMLElement): this;
+  append(nodes: BaseComponent | Array<BaseComponent>): this;
 }
 
 export class MNColorPicker extends BaseComponent {

@@ -1105,10 +1105,85 @@
     }
   }
 
+  class MNState {
+    constructor(initialVal) {
+      this._value = initialVal;
+      this.listeners = [];
+    }
+
+    get value() {
+      return this._value;
+    }
+
+    set value(newVal) {
+      if (this._value !== newVal) {
+        this._value = newVal;
+        this.listeners.forEach(fn => fn(newVal));
+      }
+    }
+
+    subscribe(fn) {
+      this.listeners.push(fn);
+      fn(this._value);
+      return () => {
+        this.listeners = this.listeners.filter(l => l !== fn);
+      };
+    }
+  }
+
   class BaseComponent {
     constructor (element) {
       this.element = element;
+      this._listeners = [];
     }
+
+    addEventListenerSafe(target, type, listener, options) {
+      if (!target) return this;
+      target.addEventListener(type, listener, options);
+      this._listeners.push({ target, type, listener, options });
+      return this;
+    }
+
+    removeEventListenerSafe(target, type, listener, options) {
+      if (!target) return this;
+      target.removeEventListener(type, listener, options);
+      this._listeners = this._listeners.filter(l => 
+        !(l.target === target && l.type === type && l.listener === listener)
+      );
+      return this;
+    }
+
+    on(type, listener, options) {
+      return this.addEventListenerSafe(this.element, type, listener, options);
+    }
+
+    bind(state) {
+      if (!state || typeof state.subscribe !== "function") return this;
+      
+      // One-way: State -> Component
+      this.unsubscribeState = state.subscribe(val => {
+        if (typeof this.setValueSilently === "function") {
+          this.setValueSilently(val);
+        } else if (typeof this.setValue === "function") {
+          this.setValue(val);
+        }
+      });
+
+      // Two-way: Component -> State
+      const updateState = () => {
+        if (typeof this.getValue === "function") {
+          const val = this.getValue();
+          if (val !== null && val !== undefined) {
+            state.value = val;
+          }
+        }
+      };
+      this.addEventListenerSafe(this.element, "change", updateState);
+      this.addEventListenerSafe(this.element, "input", updateState);
+      
+      return this;
+    }
+
     append(nodes) {
       if (Array.isArray(nodes)) {
         nodes.forEach(node => this.element.append(node.element));
@@ -1124,6 +1199,13 @@
     }
 
     destroy() {
+      if (this.unsubscribeState) {
+        this.unsubscribeState();
+      }
+      this._listeners.forEach(({ target, type, listener, options }) => {
+        target.removeEventListener(type, listener, options);
+      });
+      this._listeners = [];
       this.element.remove();
     }
 
@@ -1141,11 +1223,11 @@
       if (val !== null && val !== undefined) {
         this.setValueSilently(val);
       }
-      // Bubbled events to auto-save to storage on value change
-      this.element.addEventListener("change", () => {
+      // Bubbled events to auto-save to storage on value change using safe listener
+      this.addEventListenerSafe(this.element, "change", () => {
         this.savePersistedValue(this.getValue());
       });
-      this.element.addEventListener("input", () => {
+      this.addEventListenerSafe(this.element, "input", () => {
         this.savePersistedValue(this.getValue());
       });
       return this;
@@ -1191,6 +1273,15 @@
       this.element.textContent = content;
     }
 
+    setValue(val) {
+      this.element.textContent = val;
+      return this;
+    }
+
+    getValue() {
+      return this.element.textContent;
+    }
+
     append() { }
   }
 
@@ -1233,7 +1324,7 @@
     }
 
     onChange(callback) {
-      this.input.addEventListener("change", () => {
+      this.addEventListenerSafe(this.input, "change", () => {
         callback(this.input.checked);
       });
       return this;
@@ -1286,7 +1377,7 @@
     }
 
     onChange(callback) {
-      this.input.addEventListener("change", () => {
+      this.addEventListenerSafe(this.input, "change", () => {
         callback(this.input.checked);
       });
       return this;
@@ -1329,7 +1420,7 @@
       this.element.append(header);
       this.element.append(this.input);
 
-      this.input.addEventListener("input", () => {
+      this.addEventListenerSafe(this.input, "input", () => {
         this.valueDisplay.textContent = this.input.value;
       });
     }
@@ -1354,7 +1445,7 @@
     }
 
     onChange(callback) {
-      this.input.addEventListener("input", () => {
+      this.addEventListenerSafe(this.input, "input", () => {
         callback(Number(this.input.value));
       });
       return this;
@@ -1393,14 +1484,14 @@
     }
 
     onChange(callback) {
-      this.element.addEventListener("input", () => {
+      this.addEventListenerSafe(this.element, "input", () => {
         callback(this.element.value);
       });
       return this;
     }
 
     onSubmit(callback) {
-      this.element.addEventListener("change", () => {
+      this.addEventListenerSafe(this.element, "change", () => {
         this.element.blur();
         callback(this.element.value);
       });
@@ -1413,7 +1504,7 @@
     }
 
     onFocus(callback) {
-      this.element.addEventListener("focus", () => {
+      this.addEventListenerSafe(this.element, "focus", () => {
         callback(this.element.value);
       });
       return this;
@@ -1470,16 +1561,16 @@
     }
 
     setup() {
-      this.button.addEventListener("click", (e) => {
+      this.addEventListenerSafe(this.button, "click", (e) => {
         e.stopPropagation();
         this.element.classList.toggle("mn-active");
       });
 
-      document.addEventListener("click", () => {
+      this.addEventListenerSafe(document, "click", () => {
         this.element.classList.remove("mn-active");
       });
 
-      this.ul.addEventListener("click", (e) => {
+      this.addEventListenerSafe(this.ul, "click", (e) => {
         const li = e.target.closest("li");
         if (!li) return;
         
@@ -1508,7 +1599,7 @@
     }
 
     onChange(callback) {
-      this.ul.addEventListener("click", (e) => {
+      this.addEventListenerSafe(this.ul, "click", (e) => {
         const li = e.target.closest("li");
         if (li) {
           callback(li.id, li.textContent);
@@ -1536,7 +1627,7 @@
     append() { }
 
     onClick(callback) {
-      this.element.addEventListener("click", (e) => {
+      this.addEventListenerSafe(this.element, "click", (e) => {
         callback(e);
       });
       return this;
@@ -1567,12 +1658,12 @@
       this.element.classList.add(direction === "left" ? "exit-to-left" : "exit-to-right");
 
       const onEnd = () => {
-        this.element.removeEventListener("transitionend", onEnd);
+        this.removeEventListenerSafe(this.element, "transitionend", onEnd);
         this.element.classList.remove("exit-to-left", "exit-to-right");
         if (callback) callback();
       };
       
-      this.element.addEventListener("transitionend", onEnd, { once: true });
+      this.addEventListenerSafe(this.element, "transitionend", onEnd, { once: true });
     }
   }
 
@@ -1581,6 +1672,13 @@
       super(document.createElement("span"));
       this.element.setAttribute("class", `mn-badge mn-badge-${type}`);
       this.element.textContent = content;
+    }
+    setValue(val) {
+      this.element.textContent = val;
+      return this;
+    }
+    getValue() {
+      return this.element.textContent;
     }
     append() { }
   }
@@ -1619,7 +1717,7 @@
       this.element.append(this.header);
       this.element.append(this.body);
 
-      this.header.addEventListener("click", () => {
+      this.addEventListenerSafe(this.header, "click", () => {
         this.element.classList.toggle("mn-expanded");
       });
     }
@@ -1666,7 +1764,7 @@
       this.element.append(this.label);
       this.element.append(control);
 
-      this.input.addEventListener("input", () => {
+      this.addEventListenerSafe(this.input, "input", () => {
         const val = this.input.value;
         this.dot.style.backgroundColor = val;
         this.valueSpan.textContent = val;
@@ -1695,7 +1793,7 @@
     }
 
     onChange(callback) {
-      this.input.addEventListener("change", () => {
+      this.addEventListenerSafe(this.input, "change", () => {
         callback(this.input.value);
       });
       return this;
@@ -1760,6 +1858,7 @@
     MNDivider,
     MNToast,
     MNAccordion,
-    MNColorPicker
+    MNColorPicker,
+    MNState
   };
 }));
