@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MNGUI v2.0.0 Premium Demo</title>
+  <!-- Nhúng thư viện CSS từ Google Fonts để giao diện đẹp hơn -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #022c22;
+      --text-color: #f0fdf4;
+      --card-bg: #064e3b;
+    }
+    
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-color: #f0fdf4;
+        --text-color: #064e3b;
+        --card-bg: #ffffff;
+      }
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(132, 204, 22, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
+    }
+
+    header {
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0;
+      font-weight: 800;
+      background: linear-gradient(135deg, #10b981 0%, #059669 50%, #14b8a6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      opacity: 0.7;
+      margin-top: 0.5rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 0;
+      font-weight: 700;
+    }
+
+    ol {
+      padding-left: 1.5rem;
+      line-height: 1.8;
+    }
+
+    code {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    .shortcut-badge {
+      display: inline-block;
+      background: #475569;
+      color: #fff;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin: 0 0.2rem;
+    }
+
+    /* Mẹo chỉ dẫn trực quan */
+    .indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>MNGUI v2.0.0</h1>
+    <p class="subtitle">Trang kiểm thử giao diện Premium và các tính năng nâng cấp hoàn hảo</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>🚀 Hướng dẫn Kiểm thử nhanh</h2>
+      <p>Bảng điều khiển <strong>MNGUI</strong> đã được tích hợp sẵn trên trang này dưới góc màn hình. Hãy làm theo các bước dưới đây để kiểm tra mọi nâng cấp cao cấp:</p>
+      <ol>
+        <li>Nhấp vào nút biểu tượng <span style="font-size: 1.2rem;">⚙️</span> ở góc dưới cùng bên phải (hoặc nhấn tổ hợp phím tắt <span class="shortcut-badge">Alt</span> + <span class="shortcut-badge">M</span>) để mở bảng điều khiển.</li>
+        <li><strong>Kiểm thử Kéo thả (Draggable)</strong>: Nhấp và giữ chuột vào thanh tiêu đề màu xám trên cùng của bảng điều khiển (có chữ <em>"Cấu hình Script"</em>) rồi di chuyển xung quanh màn hình. Bảng điều khiển sẽ di chuyển cực kỳ mượt mà.</li>
+        <li><strong>Kiểm thử Hiệu ứng Slide Mượt mà</strong>:
+          <ul>
+            <li>Trong bảng điều khiển, hãy nhấp vào nút <strong>"Cấu hình nâng cao"</strong> để chuyển sang màn hình thứ hai.</li>
+            <li>Quan sát hiệu ứng trượt trơn tru trượt song song giữa 2 màn hình.</li>
+            <li>Nhấp vào nút <strong>"← Quay lại"</strong> để kiểm thử hiệu ứng quay lại.</li>
+          </ul>
+        </li>
+        <li><strong>Kiểm thử Hệ thống Toast và các Component mới</strong>:
+          <ul>
+            <li>Thay đổi trạng thái của các nút bật/tắt (Switch và Checkbox) để nhận được thông báo Toast màu sắc trực quan ở góc trên bên phải.</li>
+            <li>Kéo thanh trượt <strong>"Tốc độ cuộn"</strong> để quan sát giá trị số thay đổi động và nhận Toast thông báo giá trị mới.</li>
+            <li>Nhấp vào Dropdown <strong>"Chế độ chạy"</strong> để trải nghiệm cơ chế bắt sự kiện chuẩn xác của menu lựa chọn.</li>
+          </ul>
+        </li>
+        <li><strong>Kiểm thử chế độ tối tự động (Auto Dark Mode)</strong>: Thay đổi giao diện hệ điều hành/trình duyệt của bạn sang chế độ Sáng hoặc Tối để thấy MNGUI tự động hòa trộn màu sắc cực kỳ bắt mắt.</li>
+      </ol>
+
+      <div class="indicator">
+        <span class="pulse"></span>
+        <span>Bảng điều khiển đã sẵn sàng! Hãy nhấn vào nút bánh răng ở góc dưới phải để bắt đầu trải nghiệm.</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Nhúng trực tiếp file thư viện mngui.js cục bộ -->
+  <script src="mngui.js"></script>
+  
+  <!-- Script khởi tạo cấu hình MNGUI cho trang demo -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Khởi tạo lớp chính của GUI
+      const gui = new MNGUI();
+      
+      // Tùy biến icon & kích thước của Popup
+      gui.popup.setIcon("⚙️");
+      gui.popup.setPopupSize("380px", "520px");
+      gui.popup.setShortcut("Alt+M");
+      
+      // ----------------------------------------------------
+      // MÀN HÌNH CHÍNH (SCREEN 1)
+      // ----------------------------------------------------
+      const mainScreen = new MNScreen();
+      const mainCol = new MNColumn();
+      
+      // Tiêu đề chính
+      mainCol.append(new MNText("Cấu hình chính").style("font-size: 18px; font-weight: bold; color: var(--mn_primary); margin-bottom: 4px; display: block;"));
+      mainCol.append(new MNDivider());
+      
+      // Badge hiển thị phiên bản
+      const infoRow = new MNRow();
+      infoRow.append(new MNText("Phiên bản thư viện: "));
+      infoRow.append(new MNBadge("v3.0.0 Premium", "success"));
+      mainCol.append(infoRow);
+      
+      // Switch Toggle và Checkbox
+      const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo")
+        .persist("auto_click_switch")
+        .onChange((checked) => {
+          if (checked) {
+            MNToast.show("Đã kích hoạt Auto-Click quảng cáo thành công!", "success");
+          } else {
+            MNToast.show("Đã tắt chế độ Auto-Click.", "info");
+          }
+        });
+      mainCol.append(autoClickSwitch);
+
+      const bypassCheckbox = new MNCheckbox("Tự động vượt Captcha liên kết", true)
+        .persist("bypass_checkbox")
+        .onChange((checked) => {
+          MNToast.show(checked ? "Đã bật vượt Captcha" : "Đã tắt vượt Captcha", checked ? "success" : "warning");
+        });
+      mainCol.append(bypassCheckbox);
+      
+      // Slider mới
+      const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5)
+        .persist("scroll_speed_slider")
+        .onChange((value) => {
+          MNToast.show("Đã cập nhật tốc độ: " + value + " giây", "info", 1500);
+        });
+      mainCol.append(scrollSpeedSlider);
+      
+      mainCol.append(new MNDivider());
+
+      // Premium Accordion for UI Customization (v3.0)
+      const uiAccordion = new MNAccordion("Tùy biến giao diện (v3.0)", false);
+      const themeColorPicker = new MNColorPicker("Màu chủ đạo (Theme)", "#10b981")
+        .persist("theme_accent_color")
+        .onChange((color) => {
+          document.documentElement.style.setProperty("--mn_primary", color);
+          MNToast.show("Đã đổi màu chủ đạo sang " + color, "success", 1500);
+        });
+      uiAccordion.append(themeColorPicker);
+      mainCol.append(uiAccordion);
+      
+      // Apply theme color on load
+      const savedThemeColor = themeColorPicker.getValue();
+      if (savedThemeColor) {
+        document.documentElement.style.setProperty("--mn_primary", savedThemeColor);
+      }
+
+      mainCol.append(new MNDivider());
+
+      // Nút điều hướng sang màn hình 2
+      const nextBtn = new MNButton("Cấu hình nâng cao →").onClick(() => {
+        gui.navigation("advanced");
+      }).style("width: 100%; margin-top: 10px;");
+      mainCol.append(nextBtn);
+      
+      mainScreen.append(mainCol);
+
+      // ----------------------------------------------------
+      // MÀN HÌNH NÂNG CAO (SCREEN 2)
+      // ----------------------------------------------------
+      const advScreen = new MNScreen();
+      const advCol = new MNColumn();
+      
+      // Tiêu đề
+      advCol.append(new MNText("Cấu hình nâng cao").style("font-size: 18px; font-weight: bold; color: var(--mn_primary); margin-bottom: 4px; display: block;"));
+      advCol.append(new MNDivider());
+      
+      // Input văn bản
+      advCol.append(new MNText("Định danh tài khoản API:").style("font-size: 13px; font-weight: 600;"));
+      const apiInput = new MNInput("Nhập API key tại đây...")
+        .persist("api_input")
+        .onSubmit((val) => {
+          if (val.trim() === "") {
+            MNToast.show("API key không được để trống!", "error");
+          } else {
+            MNToast.show("Đã lưu API key: " + val.substring(0, 4) + "****", "success");
+          }
+        });
+      advCol.append(apiInput);
+      
+      // Dropdown Select mới
+      advCol.append(new MNText("Chế độ hoạt động tối ưu:").style("font-size: 13px; font-weight: 600; margin-top: 6px;"));
+      const modeSelect = new MNSelect("Chọn chế độ chạy...")
+        .setData([
+          { id: "stealth", name: "🛡️ Tàng hình ẩn danh (Khuyên dùng)" },
+          { id: "turbo", name: "⚡ Turbo Tốc độ cao" },
+          { id: "battery", name: "🔋 Tiết kiệm Pin & Tài nguyên" }
+        ])
+        .persist("mode_select")
+        .onChange((id, name) => {
+          MNToast.show("Đổi chế độ sang: " + name, "success");
+        });
+      advCol.append(modeSelect);
+      
+      advCol.append(new MNDivider());
+      
+      // Demo Reactive State & Two-way Binding (v3.0.0)
+      advCol.append(new MNText("Đồng bộ dữ liệu Reactive (Hai chiều):").style("font-size: 13px; font-weight: 600; margin-top: 4px; display: block;"));
+      
+      const textState = new MNState("Thử nhập gì đó...");
+      
+      const boundInput = new MNInput("Nhập nội dung...")
+        .bind(textState);
+        
+      const boundText = new MNText("")
+        .style("font-size: 13px; color: var(--mn_primary); font-weight: 500; min-height: 20px; display: block; margin-top: 4px;")
+        .bind(textState);
+        
+      advCol.append(boundInput);
+      advCol.append(boundText);
+
+      advCol.append(new MNDivider());
+
+      // Hàng nút tương tác
+      const btnRow = new MNRow();
+      
+      const backBtn = new MNButton("← Quay lại").onClick(() => {
+        gui.back();
+      }).style("flex: 1; border-color: var(--mn_secondary); color: var(--mn_secondary);");
+      
+      const testToastBtn = new MNButton("Gửi Test Error").onClick(() => {
+        MNToast.show("Phát hiện lỗi kết nối máy chủ API!", "error", 4000);
+      }).style("flex: 1;");
+      
+      btnRow.append(backBtn);
+      btnRow.append(testToastBtn);
+      advCol.append(btnRow);
+      
+      advScreen.append(advCol);
+
+      // ----------------------------------------------------
+      // ĐĂNG KÝ NAVIGATOR VÀ HIỂN THỊ
+      // ----------------------------------------------------
+      const navigator = new StackNavigator([
+        { name: "main", component: mainScreen },
+        { name: "advanced", component: advScreen }
+      ], "main");
+      
+      gui.setNavigator(navigator);
+      
+      // Cập nhật tiêu đề hiển thị trên thanh Grab bar kéo thả của Popup
+      gui.popup.setTitle("Cấu hình Script Auto");
+      
+      gui.render();
+    });
+  </script>
+</body>
+</html>
