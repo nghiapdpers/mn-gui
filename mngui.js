@@ -637,6 +637,108 @@
         .mn-toast-info {
           border-left: 4px solid var(--mn_primary);
         }
+
+        /* Accordion Collapsible Group */
+        .mn-accordion {
+          width: 100%;
+          border-radius: var(--mn_radius);
+          border: 1px solid var(--mn_border);
+          background: var(--mn_surface);
+          overflow: hidden;
+          margin-bottom: 4px;
+          transition: all 0.25s ease;
+        }
+        .mn-accordion-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          cursor: pointer;
+          user-select: none;
+          font-family: var(--mn_font);
+          color: var(--mn_onSurface);
+          font-size: 14px;
+          font-weight: 600;
+          background: rgba(0, 0, 0, 0.02);
+          transition: background 0.2s ease;
+        }
+        .mn-accordion-header:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+        .mn-accordion-chevron {
+          width: 16px;
+          height: 16px;
+          fill: currentColor;
+          transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .mn-accordion.mn-expanded .mn-accordion-chevron {
+          transform: rotate(90deg);
+        }
+        .mn-accordion-body {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding: 16px;
+          border-top: 1px solid var(--mn_border);
+          max-height: 2000px;
+          opacity: 1;
+          transition: max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), padding 0.3s ease, opacity 0.2s ease;
+          overflow: hidden;
+        }
+        .mn-accordion:not(.mn-expanded) .mn-accordion-body {
+          max-height: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          opacity: 0;
+          border-top-color: transparent;
+          pointer-events: none;
+        }
+
+        /* Color Picker Component */
+        .mn-color-picker {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          gap: 12px;
+          font-family: var(--mn_font);
+          color: var(--mn_onSurface);
+          font-size: 14px;
+        }
+        .mn-color-picker-label {
+          font-weight: 500;
+        }
+        .mn-color-picker-control {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+        }
+        .mn-color-picker-dot {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 2px solid var(--mn_border);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transition: transform 0.15s ease;
+        }
+        .mn-color-picker-dot:hover {
+          transform: scale(1.1);
+        }
+        .mn-color-picker-input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+          width: 0;
+          height: 0;
+        }
+        .mn-color-picker-value {
+          font-family: monospace;
+          font-size: 13px;
+          color: var(--mn_onSurface);
+          opacity: 0.8;
+          text-transform: uppercase;
+        }
       `;
 
       const style = document.createElement("style");
@@ -939,6 +1041,40 @@
     }
   }
 
+  class StatePersistence {
+    static get(key) {
+      let rawVal = null;
+      try {
+        if (typeof GM_getValue !== "undefined") {
+          rawVal = GM_getValue(key);
+        }
+      } catch (e) {}
+      if (rawVal === null || rawVal === undefined) {
+        try {
+          rawVal = localStorage.getItem(key);
+        } catch (e) {}
+      }
+      if (rawVal === null || rawVal === undefined) return null;
+      try {
+        return JSON.parse(rawVal);
+      } catch (e) {
+        return rawVal;
+      }
+    }
+
+    static set(key, value) {
+      const serialized = JSON.stringify(value);
+      try {
+        if (typeof GM_setValue !== "undefined") {
+          GM_setValue(key, serialized);
+        }
+      } catch (e) {}
+      try {
+        localStorage.setItem(key, serialized);
+      } catch (e) {}
+    }
+  }
+
   class BaseComponent {
     constructor (element) {
       this.element = element;
@@ -966,6 +1102,41 @@
       const clonedInstance = new this.constructor();
       clonedInstance.element = cloneElement;
       return clonedInstance;
+    }
+
+    // --- State Persistence & Values (v3) ---
+    persist(key) {
+      this.persistKey = key;
+      const val = StatePersistence.get(this.persistKey);
+      if (val !== null && val !== undefined) {
+        this.setValueSilently(val);
+      }
+      // Bubbled events to auto-save to storage on value change
+      this.element.addEventListener("change", () => {
+        this.savePersistedValue(this.getValue());
+      });
+      this.element.addEventListener("input", () => {
+        this.savePersistedValue(this.getValue());
+      });
+      return this;
+    }
+
+    getValue() {
+      return null;
+    }
+
+    setValue(val) {
+      return this;
+    }
+
+    setValueSilently(val) {
+      return this;
+    }
+
+    savePersistedValue(val) {
+      if (this.persistKey && val !== null && val !== undefined) {
+        StatePersistence.set(this.persistKey, val);
+      }
     }
   }
 
@@ -1016,6 +1187,21 @@
 
     append() { }
 
+    getValue() {
+      return this.input.checked;
+    }
+
+    setValue(val) {
+      this.input.checked = val;
+      this.input.dispatchEvent(new Event("change"));
+      return this;
+    }
+
+    setValueSilently(val) {
+      this.input.checked = val;
+      return this;
+    }
+
     onChange(callback) {
       this.input.addEventListener("change", () => {
         callback(this.input.checked);
@@ -1053,6 +1239,21 @@
     }
 
     append() { }
+
+    getValue() {
+      return this.input.checked;
+    }
+
+    setValue(val) {
+      this.input.checked = val;
+      this.input.dispatchEvent(new Event("change"));
+      return this;
+    }
+
+    setValueSilently(val) {
+      this.input.checked = val;
+      return this;
+    }
 
     onChange(callback) {
       this.input.addEventListener("change", () => {
@@ -1105,6 +1306,23 @@
 
     append() { }
 
+    getValue() {
+      return Number(this.input.value);
+    }
+
+    setValue(val) {
+      this.input.value = val;
+      this.valueDisplay.textContent = val;
+      this.input.dispatchEvent(new Event("input"));
+      return this;
+    }
+
+    setValueSilently(val) {
+      this.input.value = val;
+      this.valueDisplay.textContent = val;
+      return this;
+    }
+
     onChange(callback) {
       this.input.addEventListener("input", () => {
         callback(Number(this.input.value));
@@ -1128,6 +1346,21 @@
     }
 
     append() { }
+
+    getValue() {
+      return this.element.value;
+    }
+
+    setValue(val) {
+      this.element.value = val;
+      this.element.dispatchEvent(new Event("input"));
+      return this;
+    }
+
+    setValueSilently(val) {
+      this.element.value = val;
+      return this;
+    }
 
     onChange(callback) {
       this.element.addEventListener("input", () => {
@@ -1180,6 +1413,32 @@
 
     append() { }
 
+    getValue() {
+      const activeLi = this.ul.querySelector("li.mn-active");
+      return activeLi ? activeLi.id : "";
+    }
+
+    setValue(id) {
+      const li = this.ul.querySelector(`li[id='${id}']`);
+      if (li) {
+        this.button.textContent = li.textContent;
+        this.ul.querySelector("li.mn-active")?.classList?.remove("mn-active");
+        li.classList.add("mn-active");
+        this.element.dispatchEvent(new Event("change"));
+      }
+      return this;
+    }
+
+    setValueSilently(id) {
+      const li = this.ul.querySelector(`li[id='${id}']`);
+      if (li) {
+        this.button.textContent = li.textContent;
+        this.ul.querySelector("li.mn-active")?.classList?.remove("mn-active");
+        li.classList.add("mn-active");
+      }
+      return this;
+    }
+
     setup() {
       this.button.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1198,6 +1457,9 @@
         this.ul.querySelector("li.mn-active")?.classList?.remove("mn-active");
         li.classList.add("mn-active");
         this.element.classList.remove("mn-active");
+        
+        // Dispatch change event to bubble up for persistence
+        this.element.dispatchEvent(new Event("change"));
       });
 
       return this;
@@ -1301,6 +1563,115 @@
     append() { }
   }
 
+  class MNAccordion extends BaseComponent {
+    constructor (title = "", isExpanded = false) {
+      super(document.createElement("div"));
+      this.element.setAttribute("class", "mn-accordion" + (isExpanded ? " mn-expanded" : ""));
+
+      this.header = document.createElement("div");
+      this.header.setAttribute("class", "mn-accordion-header");
+
+      this.titleSpan = document.createElement("span");
+      this.titleSpan.textContent = title;
+
+      // Premium inline SVG chevron
+      this.chevron = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      this.chevron.setAttribute("class", "mn-accordion-chevron");
+      this.chevron.setAttribute("viewBox", "0 0 24 24");
+      this.chevron.innerHTML = `<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>`;
+
+      this.header.append(this.titleSpan);
+      this.header.append(this.chevron);
+
+      this.body = document.createElement("div");
+      this.body.setAttribute("class", "mn-accordion-body");
+
+      this.element.append(this.header);
+      this.element.append(this.body);
+
+      this.header.addEventListener("click", () => {
+        this.element.classList.toggle("mn-expanded");
+      });
+    }
+
+    append(nodes) {
+      if (Array.isArray(nodes)) {
+        nodes.forEach(node => this.body.append(node.element));
+      } else {
+        this.body.append(nodes.element);
+      }
+      return this;
+    }
+  }
+
+  class MNColorPicker extends BaseComponent {
+    constructor (title = "", defaultColor = "#10b981") {
+      super(document.createElement("div"));
+      this.element.setAttribute("class", "mn-color-picker");
+
+      this.label = document.createElement("span");
+      this.label.setAttribute("class", "mn-color-picker-label");
+      this.label.textContent = title;
+
+      const control = document.createElement("label");
+      control.setAttribute("class", "mn-color-picker-control");
+
+      this.dot = document.createElement("div");
+      this.dot.setAttribute("class", "mn-color-picker-dot");
+      this.dot.style.backgroundColor = defaultColor;
+
+      this.valueSpan = document.createElement("span");
+      this.valueSpan.setAttribute("class", "mn-color-picker-value");
+      this.valueSpan.textContent = defaultColor;
+
+      this.input = document.createElement("input");
+      this.input.setAttribute("type", "color");
+      this.input.setAttribute("class", "mn-color-picker-input");
+      this.input.value = defaultColor;
+
+      control.append(this.dot);
+      control.append(this.valueSpan);
+      control.append(this.input);
+
+      this.element.append(this.label);
+      this.element.append(control);
+
+      this.input.addEventListener("input", () => {
+        const val = this.input.value;
+        this.dot.style.backgroundColor = val;
+        this.valueSpan.textContent = val;
+      });
+    }
+
+    append() {}
+
+    getValue() {
+      return this.input.value;
+    }
+
+    setValue(color) {
+      this.input.value = color;
+      this.dot.style.backgroundColor = color;
+      this.valueSpan.textContent = color;
+      this.input.dispatchEvent(new Event("change", { bubbles: true }));
+      return this;
+    }
+
+    setValueSilently(color) {
+      this.input.value = color;
+      this.dot.style.backgroundColor = color;
+      this.valueSpan.textContent = color;
+      return this;
+    }
+
+    onChange(callback) {
+      this.input.addEventListener("change", () => {
+        callback(this.input.value);
+      });
+      return this;
+    }
+  }
+
   class MNToast {
     static container = null;
     
@@ -1357,6 +1728,8 @@
     MNScreen,
     MNBadge,
     MNDivider,
-    MNToast
+    MNToast,
+    MNAccordion,
+    MNColorPicker
   };
 }));

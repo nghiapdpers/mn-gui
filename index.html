@@ -209,30 +209,55 @@
       // Badge hiển thị phiên bản
       const infoRow = new MNRow();
       infoRow.append(new MNText("Phiên bản thư viện: "));
-      infoRow.append(new MNBadge("v2.0.0 Premium", "success"));
+      infoRow.append(new MNBadge("v3.0.0 Premium", "success"));
       mainCol.append(infoRow);
       
       // Switch Toggle và Checkbox
-      const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo").onChange((checked) => {
-        if (checked) {
-          MNToast.show("Đã kích hoạt Auto-Click quảng cáo thành công!", "success");
-        } else {
-          MNToast.show("Đã tắt chế độ Auto-Click.", "info");
-        }
-      });
+      const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo")
+        .persist("auto_click_switch")
+        .onChange((checked) => {
+          if (checked) {
+            MNToast.show("Đã kích hoạt Auto-Click quảng cáo thành công!", "success");
+          } else {
+            MNToast.show("Đã tắt chế độ Auto-Click.", "info");
+          }
+        });
       mainCol.append(autoClickSwitch);
 
-      const bypassCheckbox = new MNCheckbox("Tự động vượt Captcha liên kết", true).onChange((checked) => {
-        MNToast.show(checked ? "Đã bật vượt Captcha" : "Đã tắt vượt Captcha", checked ? "success" : "warning");
-      });
+      const bypassCheckbox = new MNCheckbox("Tự động vượt Captcha liên kết", true)
+        .persist("bypass_checkbox")
+        .onChange((checked) => {
+          MNToast.show(checked ? "Đã bật vượt Captcha" : "Đã tắt vượt Captcha", checked ? "success" : "warning");
+        });
       mainCol.append(bypassCheckbox);
       
       // Slider mới
-      const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5).onChange((value) => {
-        MNToast.show("Đã cập nhật tốc độ: " + value + " giây", "info", 1500);
-      });
+      const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5)
+        .persist("scroll_speed_slider")
+        .onChange((value) => {
+          MNToast.show("Đã cập nhật tốc độ: " + value + " giây", "info", 1500);
+        });
       mainCol.append(scrollSpeedSlider);
       
+      mainCol.append(new MNDivider());
+
+      // Premium Accordion for UI Customization (v3.0)
+      const uiAccordion = new MNAccordion("Tùy biến giao diện (v3.0)", false);
+      const themeColorPicker = new MNColorPicker("Màu chủ đạo (Theme)", "#10b981")
+        .persist("theme_accent_color")
+        .onChange((color) => {
+          document.documentElement.style.setProperty("--mn_primary", color);
+          MNToast.show("Đã đổi màu chủ đạo sang " + color, "success", 1500);
+        });
+      uiAccordion.append(themeColorPicker);
+      mainCol.append(uiAccordion);
+      
+      // Apply theme color on load
+      const savedThemeColor = themeColorPicker.getValue();
+      if (savedThemeColor) {
+        document.documentElement.style.setProperty("--mn_primary", savedThemeColor);
+      }
+
       mainCol.append(new MNDivider());
 
       // Nút điều hướng sang màn hình 2
@@ -255,13 +280,15 @@
       
       // Input văn bản
       advCol.append(new MNText("Định danh tài khoản API:").style("font-size: 13px; font-weight: 600;"));
-      const apiInput = new MNInput("Nhập API key tại đây...").onSubmit((val) => {
-        if (val.trim() === "") {
-          MNToast.show("API key không được để trống!", "error");
-        } else {
-          MNToast.show("Đã lưu API key: " + val.substring(0, 4) + "****", "success");
-        }
-      });
+      const apiInput = new MNInput("Nhập API key tại đây...")
+        .persist("api_input")
+        .onSubmit((val) => {
+          if (val.trim() === "") {
+            MNToast.show("API key không được để trống!", "error");
+          } else {
+            MNToast.show("Đã lưu API key: " + val.substring(0, 4) + "****", "success");
+          }
+        });
       advCol.append(apiInput);
       
       // Dropdown Select mới
@@ -272,6 +299,7 @@
           { id: "turbo", name: "⚡ Turbo Tốc độ cao" },
           { id: "battery", name: "🔋 Tiết kiệm Pin & Tài nguyên" }
         ])
+        .persist("mode_select")
         .onChange((id, name) => {
           MNToast.show("Đổi chế độ sang: " + name, "success");
         });

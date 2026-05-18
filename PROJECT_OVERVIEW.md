@@ -26,6 +26,8 @@ Thư viện bao gồm các lớp đối tượng chính sau:
     *   `MNSelect`: Dropdown lựa chọn giá trị tùy biến.
     *   `MNBadge`: Huy hiệu nhỏ hiển thị nhãn/trạng thái.
     *   `MNDivider`: Đường kẻ phân cách các phần UI.
+    *   `MNAccordion`: Nhóm các UI có thể thu gọn/mở rộng (Collapsible Group) siêu mượt.
+    *   `MNColorPicker`: Bộ chọn màu sắc (Color Picker) trực quan với mã HEX trực tiếp.
     *   `MNToast`: Hệ thống thông báo nhanh xuất hiện ở góc màn hình.
 
 ---
@@ -34,6 +36,7 @@ Thư viện bao gồm các lớp đối tượng chính sau:
 
 | Phiên bản | Ngày | Tác giả | Các thay đổi chính |
 |---|---|---|---|
+| **3.0.0** | 2026-05-18 | Antigravity | **Nâng cấp Hệ thống Lưu trạng thái & Tùy biến Cao cấp**: <br>1. Thêm tính năng **Tự động lưu trạng thái (State Persistence)** qua phương thức `.persist(key)` cho các component: `MNSwitch`, `MNCheckbox`, `MNSlider`, `MNInput`, `MNSelect`. Tự động ưu tiên `GM_setValue`/`GM_getValue` cho Userscripts chéo trang và fallback về `localStorage`.<br>2. Thêm component cao cấp **`MNAccordion`** (Khung thu gọn mượt mà).<br>3. Thêm component cao cấp **`MNColorPicker`** (Bộ chọn màu sắc hiện đại, hiển thị HEX và cập nhật trực tiếp).<br>4. Cung cấp bộ công cụ tự động hóa DX: File watch tự động build `build.js` và file autocomplete kiểu dữ liệu TypeScript đầy đủ **`mngui.d.ts`** cho lập trình viên.<br>5. Chuyển đổi toàn bộ layout sang hệ màu **Xanh Lá Non dịu nhẹ (Mint Green Theme)** với hỗ trợ Dark Mode tự động mượt mà.<br>6. Xóa bỏ hoàn toàn tệp `demo.html` trùng lặp, thống nhất kiểm thử trên `index.html` được host qua GitHub Pages. |
 | **2.0.0** | 2026-05-18 | Antigravity | **Nâng cấp Premium & Sửa lỗi**: <br>1. Sửa lỗi clone của `MNSwitch` do `label` bị khai báo cục bộ.<br>2. Sửa lỗi click ngoài thẻ `li` trên `MNSelect` làm mất text của button.<br>3. Sửa lỗi `transitionend` kích hoạt callback ngay lập tức trong `MNScreen.hide()`. <br>4. Thêm chức năng **Kéo thả (Draggable)** cho Popup.<br>5. Nâng cấp giao diện **Glassmorphism** sang trọng, hiện đại với các hiệu ứng đổ bóng sâu.<br>6. Thêm 4 component: `MNCheckbox`, `MNSlider`, `MNDivider`, `MNBadge`.<br>7. Thêm lớp thông báo **`MNToast`** siêu mượt.<br>8. Hỗ trợ tự động chuyển Dark/Light Mode. |
 | **1.0.0** | Trước đó | Nghiapd | Phiên bản khởi tạo đầu tiên, cung cấp các thành phần giao diện cơ bản và điều hướng StackNavigator. |
 
