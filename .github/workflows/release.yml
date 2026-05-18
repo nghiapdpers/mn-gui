@@ -28,6 +28,10 @@ jobs:
       - name: Biên dịch thư viện (Build)
         run: npm run build
 
+      - name: Đóng gói bản Offline (Zip)
+        run: |
+          zip -r mngui-offline.zip mngui.js mngui.min.js dist/
+
       - name: Deploy lên nhánh release
         run: |
           git config --global user.name "github-actions[bot]"
@@ -35,7 +39,7 @@ jobs:
           
           # Lưu lại các tệp build
           mkdir -p ../temp_build
-          cp -r mngui.js mngui.min.js dist/ ../temp_build/
+          cp -r mngui.js mngui.min.js dist/ mngui-offline.zip ../temp_build/
           
           # Khôi phục trạng thái làm việc sạch sẽ để tránh xung đột khi chuyển nhánh
           git reset --hard
@@ -55,7 +59,7 @@ jobs:
           cp -r ../temp_build/* .
           
           # Thêm và commit thay đổi
-          git add mngui.js mngui.min.js dist/
+          git add mngui.js mngui.min.js dist/ mngui-offline.zip
           git commit -m "chore: release assets [skip ci]" || echo "Không có thay đổi để commit"
           
           # Push sang nhánh release

@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - release
-      - main
-      - master
   workflow_dispatch:
 
 # Cấp quyền ghi cần thiết để xuất bản GitHub Pages
