@@ -97,5 +97,5 @@ npm run build
 - 💡 Luôn ưu tiên dùng các biến mã màu hệ thống như `var(--mn_primary)` thay vì mã màu tĩnh (`#10b981`) để component tự động cập nhật mượt mà khi người dùng thay đổi bảng màu chủ đạo.
 
 ## Tham khảo (References)
-- Tệp định nghĩa biến phong cách: [Theme.js](file:///home/nghiapd/du-an-ngoai/mn-script/mn-gui/src/core/Theme.js)
-- Tệp điều khiển kéo thả: [Popup.js](file:///home/nghiapd/du-an-ngoai/mn-script/mn-gui/src/core/Popup.js)
+- Tệp định nghĩa biến phong cách: [Theme.js](./src/core/Theme.js)
+- Tệp điều khiển kéo thả: [Popup.js](./src/core/Popup.js)
