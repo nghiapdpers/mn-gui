@@ -3,21 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MNGUI v2.0.0 Premium Demo</title>
-  <!-- Nhúng thư viện CSS từ Google Fonts để giao diện đẹp hơn -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>MNGUI Premium Studio & Interactive Documentation</title>
+  
+  <!-- Inter & JetBrains Mono Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg-color: #022c22;
-      --text-color: #f0fdf4;
-      --card-bg: #064e3b;
+      --bg-color: #0b1329;
+      --text-color: #f8fafc;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary-color: #10b981;
+      --primary-hover: #059669;
+      --sidebar-width: 250px;
+      --accent-color: #8b5cf6;
+      --code-bg: #0f172a;
     }
     
     @media (prefers-color-scheme: light) {
       :root {
-        --bg-color: #f0fdf4;
-        --text-color: #064e3b;
-        --card-bg: #ffffff;
+        --bg-color: #f8fafc;
+        --text-color: #0f172a;
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --border-color: rgba(0, 0, 0, 0.08);
+        --primary-color: #10b981;
+        --primary-hover: #059669;
+        --accent-color: #6d28d9;
+        --code-bg: #f1f5f9;
       }
     }
 
@@ -29,68 +42,152 @@
       color: var(--text-color);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(132, 204, 22, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.08) 0px, transparent 50%);
     }
 
+    /* Modern Glassmorphic Header */
     header {
-      padding: 2rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 19, 41, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    @media (prefers-color-scheme: light) {
+      header {
+        background: rgba(248, 250, 252, 0.6);
+      }
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin: 0;
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #10b981 0%, #059669 50%, #14b8a6 100%);
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      user-select: none;
     }
 
-    p.subtitle {
-      font-size: 1.1rem;
-      opacity: 0.7;
-      margin-top: 0.5rem;
+    /* Switch Tabs & Languages controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: var(--text-color);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--primary-color);
+    }
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     main {
-      max-width: 1000px;
-      margin: 3rem auto;
+      max-width: 1200px;
+      margin: 2rem auto;
       padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
     }
 
+    .view-pane {
+      display: none;
+      animation: fadeUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    .view-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----------------------------------------------------
+     * SANDBOX TAB STYLES
+     * ---------------------------------------------------- */
     .card {
       background: var(--card-bg);
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       margin-top: 0;
-      font-weight: 700;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     ol {
       padding-left: 1.5rem;
       line-height: 1.8;
+      font-size: 1.05rem;
+    }
+    ol li {
+      margin-bottom: 8px;
     }
 
     code {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.12);
       color: #10b981;
       padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 0.95rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
     }
 
     .shortcut-badge {
@@ -104,19 +201,19 @@
       margin: 0 0.2rem;
     }
 
-    /* Mẹo chỉ dẫn trực quan */
     .indicator {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      gap: 12px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.15);
       color: #10b981;
-      padding: 0.75rem 1.25rem;
-      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
       font-weight: 600;
-      font-size: 0.95rem;
-      margin-top: 1rem;
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      width: 100%;
     }
 
     .pulse {
@@ -129,69 +226,844 @@
     }
 
     @keyframes pulse {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* ----------------------------------------------------
+     * INTERACTIVE DOCS TAB STYLES
+     * ---------------------------------------------------- */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar list */
+    .docs-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.2rem;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: sticky;
+      top: 90px;
+    }
+
+    /* Custom Premium Scrollbar for sidebar */
+    .docs-sidebar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .docs-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .docs-sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+    .docs-sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    @media (prefers-color-scheme: light) {
+      .docs-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
       }
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      .docs-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.2);
       }
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.6rem;
+      padding-left: 16px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-item {
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: block;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--text-color);
+      opacity: 0.7;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+    }
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      opacity: 1;
+      border-left-color: rgba(16, 185, 129, 0.4);
+      padding-left: 20px;
+    }
+    @media (prefers-color-scheme: light) {
+      .sidebar-item:hover {
+        background: rgba(0, 0, 0, 0.02);
+      }
+    }
+    .sidebar-item.active {
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      font-weight: 700;
+      opacity: 1;
+      padding-left: 20px;
+    }
+
+    /* Content pane */
+    .docs-content-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .docs-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.5rem;
+      min-height: 50vh;
+      line-height: 1.6;
+    }
+
+    /* Interactive Component Sandbox Preview Card */
+    .sandbox-preview-card {
+      background: rgba(16, 185, 129, 0.04);
+      border: 1.5px dashed rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .preview-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .preview-mount-node {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 25px;
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    /* Markdown Rich Styling */
+    .docs-content h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .docs-content h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-top: 1.8rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+    .docs-content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+    .docs-content ul, .docs-content ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .docs-content li {
+      margin-bottom: 6px;
+    }
+    .docs-content hr {
+      border: 0;
+      height: 1px;
+      background: var(--border-color);
+      margin: 1.8rem 0;
+    }
+    
+    /* Pretty markdown Tables */
+    .docs-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    .docs-content th {
+      padding: 10px 12px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+    .docs-content td {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+    }
+    @media (prefers-color-scheme: light) {
+      .docs-content th {
+        background: rgba(0, 0, 0, 0.03);
+      }
+    }
+
+    /* Fenced Code block custom styles */
+    .docs-content pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      position: relative;
+      margin: 1.2rem 0;
+    }
+
+    .docs-content pre code {
+      background: transparent;
+      color: var(--text-color);
+      padding: 0;
+      border-radius: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: block;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+    .docs-content pre:hover .copy-btn {
+      opacity: 1;
+    }
+    .copy-btn:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+
+    /* Shadow DOM demo elements alignment fix */
+    .preview-mount-node .mn-toast-container,
+    .preview-mount-node .mn-dialog-overlay {
+      position: absolute;
+    }
+
+    /* ----------------------------------------------------
+     * RESPONSIVE MEDIA QUERIES
+     * ---------------------------------------------------- */
+    @media (max-width: 900px) {
+      .docs-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .docs-sidebar {
+        position: sticky;
+        top: 70px;
+        z-index: 90;
+        max-height: none;
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding: 0.8rem 1.2rem;
+        white-space: nowrap;
+        border-radius: 12px;
+        scrollbar-width: none;
+      }
+      .docs-sidebar::-webkit-scrollbar {
+        display: none;
+      }
+      .sidebar-section {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sidebar-title {
+        margin-bottom: 0;
+        padding-left: 0;
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+      }
+      .sidebar-menu {
+        flex-direction: row;
+        gap: 6px;
+      }
+      .sidebar-item {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 6px;
+        display: inline-block;
+      }
+      .sidebar-item:hover, .sidebar-item.active {
+        padding-left: 12px;
+        border-left-color: transparent;
+      }
+      .sidebar-item.active {
+        border-bottom-color: var(--primary-color);
+        background: rgba(16, 185, 129, 0.1);
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+      }
+      .controls {
+        justify-content: space-between;
+        width: 100%;
+      }
+      main {
+        margin: 1rem auto;
+        padding: 0 1rem;
+      }
+      .card, .docs-content {
+        padding: 1.5rem;
+      }
+      h2 {
+        font-size: 1.5rem;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header standard container -->
   <header>
-    <h1>MNGUI v2.0.0</h1>
-    <p class="subtitle">Trang kiểm thử giao diện Premium và các tính năng nâng cấp hoàn hảo</p>
+    <div class="brand-logo">
+      <span>💎 MNGUI Premium Studio</span>
+    </div>
+    
+    <div class="controls">
+      <!-- Live Sandbox / Interactive Docs Toggle -->
+      <button class="tab-btn active" id="btn-sandbox" onclick="switchTab('sandbox')">
+        ⚡ Sandbox Demo
+      </button>
+      <button class="tab-btn" id="btn-docs" onclick="switchTab('docs')">
+        📚 Developer Docs
+      </button>
+
+      <!-- English / Vietnamese Language Switcher -->
+      <button class="lang-btn" id="btn-lang" onclick="toggleLanguage()">
+        🇻🇳 Tiếng Việt
+      </button>
+    </div>
   </header>
 
   <main>
-    <div class="card">
-      <h2>🚀 Hướng dẫn Kiểm thử nhanh</h2>
-      <p>Bảng điều khiển <strong>MNGUI</strong> đã được tích hợp sẵn trên trang này dưới góc màn hình. Hãy làm theo các bước dưới đây để kiểm tra mọi nâng cấp cao cấp:</p>
-      <ol>
-        <li>Nhấp vào nút biểu tượng <span style="font-size: 1.2rem;">⚙️</span> ở góc dưới cùng bên phải (hoặc nhấn tổ hợp phím tắt <span class="shortcut-badge">Alt</span> + <span class="shortcut-badge">M</span>) để mở bảng điều khiển.</li>
-        <li><strong>Kiểm thử Kéo thả (Draggable)</strong>: Nhấp và giữ chuột vào thanh tiêu đề màu xám trên cùng của bảng điều khiển (có chữ <em>"Cấu hình Script"</em>) rồi di chuyển xung quanh màn hình. Bảng điều khiển sẽ di chuyển cực kỳ mượt mà.</li>
-        <li><strong>Kiểm thử Hiệu ứng Slide Mượt mà</strong>:
-          <ul>
-            <li>Trong bảng điều khiển, hãy nhấp vào nút <strong>"Cấu hình nâng cao"</strong> để chuyển sang màn hình thứ hai.</li>
-            <li>Quan sát hiệu ứng trượt trơn tru trượt song song giữa 2 màn hình.</li>
-            <li>Nhấp vào nút <strong>"← Quay lại"</strong> để kiểm thử hiệu ứng quay lại.</li>
-          </ul>
-        </li>
-        <li><strong>Kiểm thử Hệ thống Toast và các Component mới</strong>:
-          <ul>
-            <li>Thay đổi trạng thái của các nút bật/tắt (Switch và Checkbox) để nhận được thông báo Toast màu sắc trực quan ở góc trên bên phải.</li>
-            <li>Kéo thanh trượt <strong>"Tốc độ cuộn"</strong> để quan sát giá trị số thay đổi động và nhận Toast thông báo giá trị mới.</li>
-            <li>Nhấp vào Dropdown <strong>"Chế độ chạy"</strong> để trải nghiệm cơ chế bắt sự kiện chuẩn xác của menu lựa chọn.</li>
-          </ul>
-        </li>
-        <li><strong>Kiểm thử chế độ tối tự động (Auto Dark Mode)</strong>: Thay đổi giao diện hệ điều hành/trình duyệt của bạn sang chế độ Sáng hoặc Tối để thấy MNGUI tự động hòa trộn màu sắc cực kỳ bắt mắt.</li>
-      </ol>
+    
+    <!-- ----------------------------------------------------
+     * SANDBOX TAB
+     * ---------------------------------------------------- -->
+    <div class="view-pane active" id="pane-sandbox">
+      <div class="card">
+        <h2 id="sb-title">🚀 Hướng dẫn Kiểm thử nhanh</h2>
+        <p id="sb-desc">Bảng điều khiển <strong>MNGUI</strong> đã được tích hợp sẵn trên trang này dưới góc màn hình. Hãy làm theo các bước dưới đây để kiểm tra mọi nâng cấp cao cấp:</p>
+        <ol id="sb-steps">
+          <li>Nhấp vào nút biểu tượng <span style="font-size: 1.2rem;">⚙️</span> ở góc dưới cùng bên phải (hoặc nhấn tổ hợp phím tắt <span class="shortcut-badge">Alt</span> + <span class="shortcut-badge">M</span>) để mở bảng điều khiển.</li>
+          <li><strong>Kiểm thử Kéo thả (Draggable)</strong>: Nhấp và giữ chuột vào thanh tiêu đề màu xám trên cùng của bảng điều khiển (có chữ <em>"Cấu hình Script"</em>) rồi di chuyển xung quanh màn hình. Bảng điều khiển sẽ di chuyển cực kỳ mượt mà.</li>
+          <li><strong>Kiểm thử Hiệu ứng Slide Mượt mà</strong>:
+            <ul>
+              <li>Trong bảng điều khiển, hãy nhấp vào nút <strong>"Cấu hình nâng cao"</strong> để chuyển sang màn hình thứ hai.</li>
+              <li>Quan sát hiệu ứng trượt trơn tru trượt song song giữa 2 màn hình.</li>
+              <li>Nhấp vào nút <strong>"← Quay lại"</strong> để kiểm thử hiệu ứng quay lại.</li>
+            </ul>
+          </li>
+          <li><strong>Kiểm thử Hệ thống Toast và các Component mới</strong>:
+            <ul>
+              <li>Thay đổi trạng thái của các nút bật/tắt (Switch và Checkbox) để nhận được thông báo Toast màu sắc trực quan ở góc trên bên phải.</li>
+              <li>Kéo thanh trượt <strong>"Tốc độ cuộn"</strong> để quan sát giá trị số thay đổi động và nhận Toast thông báo giá trị mới.</li>
+              <li>Nhấp vào Dropdown <strong>"Chế độ chạy"</strong> để trải nghiệm cơ chế bắt sự kiện chuẩn xác của menu lựa chọn.</li>
+            </ul>
+          </li>
+          <li><strong>Kiểm thử chế độ tối tự động (Auto Dark Mode)</strong>: Thay đổi giao diện hệ điều hành/trình duyệt của bạn sang chế độ Sáng hoặc Tối để thấy MNGUI tự động hòa trộn màu sắc cực kỳ bắt mắt.</li>
+        </ol>
 
-      <div class="indicator">
-        <span class="pulse"></span>
-        <span>Bảng điều khiển đã sẵn sàng! Hãy nhấn vào nút bánh răng ở góc dưới phải để bắt đầu trải nghiệm.</span>
+        <div class="indicator" id="sb-indicator">
+          <span class="pulse"></span>
+          <span>Bảng điều khiển đã sẵn sàng! Hãy nhấn vào nút bánh răng ở góc dưới phải để bắt đầu trải nghiệm.</span>
+        </div>
       </div>
     </div>
+
+    <!-- ----------------------------------------------------
+     * INTERACTIVE DOCS TAB
+     * ---------------------------------------------------- -->
+    <div class="view-pane" id="pane-docs">
+      <div class="docs-layout">
+        
+        <!-- Sticky Sidebar -->
+        <div class="docs-sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-title" id="side-core-title">Core Modules</div>
+            <ul class="sidebar-menu" id="menu-core">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-title" id="side-components-title">UI Components</div>
+            <ul class="sidebar-menu" id="menu-components">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Documentation Container -->
+        <div class="docs-content-container">
+          
+
+
+          <!-- Documentation rendering pane -->
+          <div class="docs-content" id="docs-renderer">
+            <!-- Dynamically populated markdown -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
-  <!-- Nhúng trực tiếp file thư viện mngui.js cục bộ -->
+  <!-- Load library scripts -->
   <script src="mngui.js"></script>
+  <script src="docs-data.js"></script>
   
-  <!-- Script khởi tạo cấu hình MNGUI cho trang demo -->
+  <!-- Interactive documentation rendering engine -->
+  <script>
+    let currentLang = "vi"; // Default language
+    let activeModuleId = "mngui"; // Default selected documentation
+    let activeModuleType = "core"; // "core" or "components"
+
+    // String Translation Map
+    const translations = {
+      vi: {
+        brand: "💎 MNGUI Premium Studio",
+        btnSandbox: "⚡ Sandbox Demo",
+        btnDocs: "📚 Tài liệu HD",
+        sbTitle: "🚀 Hướng dẫn Kiểm thử nhanh",
+        sbDesc: "Bảng điều khiển <strong>MNGUI</strong> đã được tích hợp sẵn trên trang này dưới góc màn hình. Hãy làm theo các bước dưới đây để kiểm tra mọi nâng cấp cao cấp:",
+        sbSteps: `
+          <li>Nhấp vào nút biểu tượng <span style="font-size: 1.2rem;">⚙️</span> ở góc dưới cùng bên phải (hoặc nhấn tổ hợp phím tắt <span class="shortcut-badge">Alt</span> + <span class="shortcut-badge">M</span>) để mở bảng điều khiển.</li>
+          <li><strong>Kiểm thử Kéo thả (Draggable)</strong>: Nhấp và giữ chuột vào thanh tiêu đề màu xám trên cùng của bảng điều khiển (có chữ <em>"Cấu hình Script"</em>) rồi di chuyển xung quanh màn hình. Bảng điều khiển sẽ di chuyển cực kỳ mượt mà.</li>
+          <li><strong>Kiểm thử Hiệu ứng Slide Mượt mà</strong>:
+            <ul>
+              <li>Trong bảng điều khiển, hãy nhấp vào nút <strong>"Cấu hình nâng cao"</strong> để chuyển sang màn hình thứ hai.</li>
+              <li>Quan sát hiệu ứng trượt trơn tru trượt song song giữa 2 màn hình.</li>
+              <li>Nhấp vào nút <strong>"← Quay lại"</strong> để kiểm thử hiệu ứng quay lại.</li>
+            </ul>
+          </li>
+          <li><strong>Kiểm thử Hệ thống Toast và các Component mới</strong>:
+            <ul>
+              <li>Thay đổi trạng thái của các nút bật/tắt (Switch và Checkbox) để nhận được thông báo Toast màu sắc trực quan ở góc trên bên phải.</li>
+              <li>Kéo thanh trượt <strong>"Tốc độ cuộn"</strong> để quan sát giá trị số thay đổi động và nhận Toast thông báo giá trị mới.</li>
+              <li>Nhấp vào Dropdown <strong>"Chế độ chạy"</strong> để trải nghiệm cơ chế bắt sự kiện chuẩn xác của menu lựa chọn.</li>
+            </ul>
+          </li>
+          <li><strong>Kiểm thử chế độ tối tự động (Auto Dark Mode)</strong>: Thay đổi giao diện hệ điều hành/trình duyệt của bạn sang chế độ Sáng hoặc Tối để thấy MNGUI tự động hòa trộn màu sắc cực kỳ bắt mắt.</li>
+        `,
+        sbIndicator: "Bảng điều khiển đã sẵn sàng! Hãy nhấn vào nút bánh răng ở góc dưới phải để bắt đầu trải nghiệm.",
+        sideCore: "Mô-đun Cốt lõi",
+        sideComp: "Thành phần UI",
+        previewHeader: "✨ Hộp Thử Nghiệm Tương Tác",
+        previewHint: "Tương tác trực tiếp với thành phần phía trên để kiểm tra giao diện, thay đổi trạng thái và phản hồi thực tế!",
+        copyBtn: "Sao chép",
+        copied: "Đã sao chép!"
+      },
+      en: {
+        brand: "💎 MNGUI Premium Studio",
+        btnSandbox: "⚡ Sandbox Demo",
+        btnDocs: "📚 Developer Docs",
+        sbTitle: "🚀 Quick Sandbox Instructions",
+        sbDesc: "The <strong>MNGUI</strong> control panel is pre-integrated on this sandbox site in the corner. Follow these steps to test all premium features:",
+        sbSteps: `
+          <li>Click the icon button <span style="font-size: 1.2rem;">⚙️</span> in the bottom-right corner (or press <span class="shortcut-badge">Alt</span> + <span class="shortcut-badge">M</span>) to open the control panel.</li>
+          <li><strong>Test Draggability</strong>: Click and hold the gray title header at the top of the control panel (reads <em>"Cấu hình Script"</em>) and drag it around the screen. It moves incredibly smoothly.</li>
+          <li><strong>Test Fluid Slide Transitions</strong>:
+            <ul>
+              <li>Inside the panel, click the button labeled <strong>"Cấu hình nâng cao"</strong> to navigate to the second screen.</li>
+              <li>Observe the parallel sliding transition between the two screens.</li>
+              <li>Click <strong>"← Quay lại"</strong> to test backward navigation.</li>
+            </ul>
+          </li>
+          <li><strong>Test Toast Alerts and New Components</strong>:
+            <ul>
+              <li>Change the states of the switches and checkboxes to trigger styled toast alerts in the upper-right corner.</li>
+              <li>Drag the <strong>"Tốc độ cuộn"</strong> slider to see numeric values change dynamically and pop a toast.</li>
+              <li>Click the <strong>"Chế độ chạy"</strong> dropdown select to experience the robust focus/selection triggers.</li>
+            </ul>
+          </li>
+          <li><strong>Test Auto Dark Mode</strong>: Change your OS or browser theme between Light and Dark to observe MNGUI dynamically blending styles beautifully.</li>
+        `,
+        sbIndicator: "The control panel is ready! Click the gear icon in the bottom-right to begin.",
+        sideCore: "Core Modules",
+        sideComp: "UI Components",
+        previewHeader: "✨ Interactive Component Sandbox",
+        previewHint: "Interact directly with the component above to test its visual appearance, state changes, and live responses!",
+        copyBtn: "Copy",
+        copied: "Copied!"
+      }
+    };
+
+    // Simple robust Markdown to HTML compiler
+    function compileMarkdown(markdown) {
+      if (!markdown) return "";
+      
+      let html = markdown;
+
+      // Handle Code Blocks with syntax highlight formatting and copy buttons
+      html = html.replace(/```javascript([\s\S]*?)```/g, (match, code) => {
+        const escapedCode = code.trim().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<pre><code>${escapedCode}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+      });
+      html = html.replace(/```css([\s\S]*?)```/g, (match, code) => {
+        const escapedCode = code.trim().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<pre><code>${escapedCode}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+      });
+      html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+        const escapedCode = code.trim().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<pre><code>${escapedCode}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+      });
+
+      // Headers
+      html = html.replace(/^# (.*?)$/gm, "<h1>$1</h1>");
+      html = html.replace(/^## (.*?)$/gm, "<h2>$1</h2>");
+      html = html.replace(/^### (.*?)$/gm, "<h3>$1</h3>");
+
+      // Tables
+      html = html.replace(/\|([^|\n]+)\|([^|\n]+)\|([^|\n]+)\|/g, (match, c1, c2, c3) => {
+        if (c1.includes("---")) return ""; // Skip divider line
+        return `<tr><td>${c1.trim()}</td><td>${c2.trim()}</td><td>${c3.trim()}</td></tr>`;
+      });
+      html = html.replace(/\|([^|\n]+)\|([^|\n]+)\|/g, (match, c1, c2) => {
+        if (c1.includes("---")) return ""; // Skip divider line
+        return `<tr><td>${c1.trim()}</td><td>${c2.trim()}</td></tr>`;
+      });
+      // Wrap table elements nicely
+      html = html.replace(/(?:<tr>[\s\S]*?<\/tr>)+/g, (match) => {
+        return `<div style="overflow-x:auto;"><table>${match}</table></div>`;
+      });
+
+      // Inline code
+      html = html.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+
+      // Bold & list bullet points
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/^\* (.*?)$/gm, "<li>$1</li>");
+      // Wrap LI nicely
+      html = html.replace(/(?:<li>.*?<\/li>)+/g, "<ul>$&</ul>");
+
+      // Horizontal dividers
+      html = html.replace(/^---$/gm, "<hr>");
+
+      // External / Internal Link highlighting
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--primary-color); font-weight:600; text-decoration:none;">$1</a>');
+
+      return html;
+    }
+
+    // Swapping views
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".view-pane").forEach(pane => pane.classList.remove("active"));
+
+      document.getElementById(`btn-${tabId}`).classList.add("active");
+      document.getElementById(`pane-${tabId}`).classList.add("active");
+
+      // Sync MNGUI popup screen depending on selected tab!
+      if (window.gui) {
+        if (tabId === "sandbox") {
+          window.gui.navigation("main");
+        } else if (tabId === "docs") {
+          updateMNGUIDocsPreview(activeModuleId);
+        }
+      }
+    }
+
+    // Toggle Languages
+    function toggleLanguage() {
+      currentLang = currentLang === "vi" ? "en" : "vi";
+      
+      const langBtn = document.getElementById("btn-lang");
+      langBtn.innerHTML = currentLang === "vi" ? "🇻🇳 Tiếng Việt" : "🇬🇧 English";
+
+      // Translate Sandbox view strings
+      const t = translations[currentLang];
+      document.getElementById("sb-title").innerHTML = t.sbTitle;
+      document.getElementById("sb-desc").innerHTML = t.sbDesc;
+      document.getElementById("sb-steps").innerHTML = t.sbSteps;
+      document.getElementById("sb-indicator").querySelector("span:last-child").textContent = t.sbIndicator;
+      
+      // Translate Sidebar Category headers
+      document.getElementById("side-core-title").textContent = t.sideCore;
+      document.getElementById("side-components-title").textContent = t.sideComp;
+
+      // Re-render current documentation in selected language
+      renderDocsContent();
+    }
+
+    // Populate sidebars dynamically from window.MNGUIDocsData
+    function populateSidebars() {
+      const coreMenu = document.getElementById("menu-core");
+      const compMenu = document.getElementById("menu-components");
+
+      coreMenu.innerHTML = "";
+      compMenu.innerHTML = "";
+
+      window.MNGUIDocsData.core.forEach(item => {
+        const li = document.createElement("li");
+        li.className = `sidebar-item ${item.id === activeModuleId ? 'active' : ''}`;
+        li.innerHTML = `${item.name}`;
+        li.addEventListener("click", () => selectDocItem(item.id, "core"));
+        coreMenu.appendChild(li);
+      });
+
+      window.MNGUIDocsData.components.forEach(item => {
+        const li = document.createElement("li");
+        li.className = `sidebar-item ${item.id === activeModuleId ? 'active' : ''}`;
+        li.innerHTML = `${item.name}`;
+        li.addEventListener("click", () => selectDocItem(item.id, "components"));
+        compMenu.appendChild(li);
+      });
+    }
+
+    // Click handler for doc select
+    function selectDocItem(id, type) {
+      activeModuleId = id;
+      activeModuleType = type;
+      
+      // Update sidebar active styling classes
+      document.querySelectorAll(".sidebar-item").forEach(item => item.classList.remove("active"));
+      populateSidebars(); // Redraws sidebar item class lists
+      
+      renderDocsContent();
+      updateMNGUIDocsPreview(id);
+    }
+
+    // Renders compiled markdown to main pane
+    function renderDocsContent() {
+      const dataSet = window.MNGUIDocsData[activeModuleType];
+      const docItem = dataSet.find(item => item.id === activeModuleId);
+      
+      if (docItem) {
+        const markdown = docItem[currentLang];
+        document.getElementById("docs-renderer").innerHTML = compileMarkdown(markdown);
+      }
+    }
+
+    // Dynamic Live Component Sandbox Engine inside MNGUI Draggable Panel!
+    function updateMNGUIDocsPreview(id) {
+      if (!window.gui || !window.docsPreviewScreen) return;
+
+      const screen = window.docsPreviewScreen;
+      screen.element.innerHTML = ""; // Clear existing elements
+
+      const col = new MNColumn();
+      col.append(new MNText("Interactive Preview").style("font-size: 18px; font-weight: bold; color: var(--mn_primary); margin-bottom: 4px; display: block;"));
+      col.append(new MNDivider());
+
+      // If active module is core, show description and return button
+      if (activeModuleType === "core") {
+        col.append(new MNText("Core Module: " + id.toUpperCase()).style("font-size: 15px; font-weight: bold; display: block; color: var(--mn_primary);"));
+        col.append(new MNText("Đây là lớp xử lý logic cốt lõi. Hãy nhấp nút bên dưới để mở rộng giao diện Sandbox hoặc tương tác với các component giao diện ở thanh bên.").style("font-size: 13px; opacity: 0.8; margin-top: 10px; line-height: 1.5; display: block;"));
+        
+        const returnBtn = new MNButton("← Quay lại Demo Sandbox").onClick(() => {
+          switchTab('sandbox');
+        }).style("width: 100%; margin-top: 15px;");
+        col.append(returnBtn);
+      } else {
+        col.append(new MNText("Thành phần: " + id.toUpperCase()).style("font-size: 13px; opacity: 0.6; display: block; margin-bottom: 12px;"));
+
+        // Render target component dynamically inside the real MNGUI popup!
+        const wrapper = new MNRow().style("justify-content: center; width: 100%; padding: 15px 0;");
+        
+        switch (id) {
+          case "mnscreen":
+            wrapper.append(new MNText("MNScreen (Container trang) đang bọc nội dung này!").style("font-style: italic; opacity: 0.8; font-size: 13px; text-align: center;"));
+            break;
+            
+          case "mncolumn":
+            const innerCol = new MNColumn().style("width: 100%;");
+            innerCol.append(new MNText("✨ Bố cục dọc Column"));
+            innerCol.append(new MNButton("Nút Bấm A"));
+            innerCol.append(new MNButton("Nút Bấm B"));
+            wrapper.append(innerCol);
+            break;
+
+          case "mnrow":
+            const innerRow = new MNRow().style("width: 100%; justify-content: space-between;");
+            innerRow.append(new MNText("Bố cục ngang Row"));
+            innerRow.append(new MNBadge("badge success", "success"));
+            wrapper.append(innerRow);
+            break;
+
+          case "mnbutton":
+            const btn = new MNButton("Nhấp Thử").onClick(() => {
+              MNToast.show("Đã kích hoạt click thành công!", "success");
+            });
+            wrapper.append(btn);
+            break;
+
+          case "mnswitch":
+            const sw = new MNSwitch("Công tắc tự động", false).onChange((checked) => {
+              MNToast.show(checked ? "Đã Bật!" : "Đã Tắt!", checked ? "success" : "info");
+            });
+            wrapper.append(sw);
+            break;
+
+          case "mncheckbox":
+            const chk = new MNCheckbox("Chọn lưu mật khẩu", true).onChange((checked) => {
+              MNToast.show(checked ? "Đã Chọn!" : "Bỏ Chọn!", "warning");
+            });
+            wrapper.append(chk);
+            break;
+
+          case "mnslider":
+            const sld = new MNSlider("Thanh kéo chọn số", 1, 10, 5, 0.5).onChange((val) => {
+              // Real time tracking
+            });
+            wrapper.append(sld);
+            break;
+
+          case "mnselect":
+            const sel = new MNSelect("Chọn chế độ chạy...").setData([
+              { id: "sv1", name: "🛡️ Chế độ an toàn" },
+              { id: "sv2", name: "⚡ Chế độ Turbo" }
+            ]).onChange((selId, selName) => {
+              MNToast.show("Đã chọn: " + selName, "success");
+            });
+            wrapper.append(sel);
+            break;
+
+          case "mncolorpicker":
+            const clr = new MNColorPicker("Chọn màu chủ đạo", "#10b981").onChange((colorHex) => {
+              MNToast.show("Màu đã chọn: " + colorHex, "info");
+            });
+            wrapper.append(clr);
+            break;
+
+          case "mnaccordion":
+            const acc = new MNAccordion("Nhấp xem chi tiết", false);
+            acc.append(new MNText("Nội dung nằm bên trong Accordion!"));
+            wrapper.append(acc);
+            break;
+
+          case "mntoast":
+            const tst = new MNButton("Kích hoạt Toast").onClick(() => {
+              MNToast.show("Thông báo Toast từ Popup!", "success");
+            });
+            wrapper.append(tst);
+            break;
+
+          case "mndialog":
+            const dlg = new MNButton("Mở Hộp thoại").onClick(() => {
+              MNDialog.show({
+                title: "Xác nhận",
+                message: "Bạn có thấy hộp thoại MNDialog này tuyệt vời không?",
+                confirmText: "Quá tuyệt!",
+                cancelText: "Bình thường",
+                onConfirm: () => MNToast.show("Cảm ơn bạn đã phản hồi!", "success")
+              });
+            });
+            wrapper.append(dlg);
+            break;
+        }
+
+        col.append(wrapper);
+      }
+
+      screen.append(col);
+      
+      // Transition to docs preview screen and open modal
+      window.gui.navigation("docs_preview");
+      window.gui.popup.show();
+    }
+
+    // Code Block Copy utility
+    function copyCode(btn) {
+      const code = btn.previousElementSibling.textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const text = btn.textContent;
+        btn.textContent = currentLang === "vi" ? "Đã sao chép!" : "Copied!";
+        btn.style.background = "#10b981";
+        btn.style.color = "#fff";
+        setTimeout(() => {
+          btn.textContent = text;
+          btn.style.background = "";
+          btn.style.color = "";
+        }, 1500);
+      });
+    }
+
+    // Setup initial pages
+    document.addEventListener("DOMContentLoaded", () => {
+      populateSidebars();
+      renderDocsContent();
+    });
+  </script>
+  
+  <!-- Script khởi tạo cấu hình MNGUI chính cho trang demo (Sandbox) -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Khởi tạo lớp chính của GUI
-      const gui = new MNGUI();
+      window.gui = new MNGUI();
+      const gui = window.gui;
       
-      // Tùy biến icon & kích thước của Popup
       gui.popup.setIcon("⚙️");
       gui.popup.setPopupSize("380px", "520px");
       gui.popup.setShortcut("Alt+M");
@@ -202,17 +1074,14 @@
       const mainScreen = new MNScreen();
       const mainCol = new MNColumn();
       
-      // Tiêu đề chính
       mainCol.append(new MNText("Cấu hình chính").style("font-size: 18px; font-weight: bold; color: var(--mn_primary); margin-bottom: 4px; display: block;"));
       mainCol.append(new MNDivider());
       
-      // Badge hiển thị phiên bản
       const infoRow = new MNRow();
       infoRow.append(new MNText("Phiên bản thư viện: "));
-      infoRow.append(new MNBadge("v3.0.0 Premium", "success"));
+      infoRow.append(new MNBadge("v4.0.0 Premium", "success"));
       mainCol.append(infoRow);
       
-      // Switch Toggle và Checkbox
       const autoClickSwitch = new MNSwitch("Bật Auto-Click quảng cáo")
         .persist("auto_click_switch")
         .onChange((checked) => {
@@ -231,7 +1100,6 @@
         });
       mainCol.append(bypassCheckbox);
       
-      // Slider mới
       const scrollSpeedSlider = new MNSlider("Tốc độ cuộn trang (giây)", 1, 10, 5, 0.5)
         .persist("scroll_speed_slider")
         .onChange((value) => {
@@ -241,8 +1109,7 @@
       
       mainCol.append(new MNDivider());
 
-      // Premium Accordion for UI Customization (v3.0)
-      const uiAccordion = new MNAccordion("Tùy biến giao diện (v3.0)", false);
+      const uiAccordion = new MNAccordion("Tùy biến giao diện (v4.0)", false);
       const themeColorPicker = new MNColorPicker("Màu chủ đạo (Theme)", "#10b981")
         .persist("theme_accent_color")
         .onChange((color) => {
@@ -252,7 +1119,6 @@
       uiAccordion.append(themeColorPicker);
       mainCol.append(uiAccordion);
       
-      // Apply theme color on load
       const savedThemeColor = themeColorPicker.getValue();
       if (savedThemeColor) {
         document.documentElement.style.setProperty("--mn_primary", savedThemeColor);
@@ -260,8 +1126,7 @@
 
       mainCol.append(new MNDivider());
 
-      // Nút điều hướng sang màn hình 2
-      const nextBtn = new MNButton("Cấu hình nâng cao →").onClick(() => {
+      const nextBtn = new MNButton("Cấu hình nâng nâng cao →").onClick(() => {
         gui.navigation("advanced");
       }).style("width: 100%; margin-top: 10px;");
       mainCol.append(nextBtn);
@@ -274,11 +1139,9 @@
       const advScreen = new MNScreen();
       const advCol = new MNColumn();
       
-      // Tiêu đề
       advCol.append(new MNText("Cấu hình nâng cao").style("font-size: 18px; font-weight: bold; color: var(--mn_primary); margin-bottom: 4px; display: block;"));
       advCol.append(new MNDivider());
       
-      // Input văn bản
       advCol.append(new MNText("Định danh tài khoản API:").style("font-size: 13px; font-weight: 600;"));
       const apiInput = new MNInput("Nhập API key tại đây...")
         .persist("api_input")
@@ -291,7 +1154,6 @@
         });
       advCol.append(apiInput);
       
-      // Dropdown Select mới
       advCol.append(new MNText("Chế độ hoạt động tối ưu:").style("font-size: 13px; font-weight: 600; margin-top: 6px;"));
       const modeSelect = new MNSelect("Chọn chế độ chạy...")
         .setData([
@@ -307,7 +1169,6 @@
       
       advCol.append(new MNDivider());
       
-      // Demo Reactive State & Two-way Binding (v3.0.0)
       advCol.append(new MNText("Đồng bộ dữ liệu Reactive (Hai chiều):").style("font-size: 13px; font-weight: 600; margin-top: 4px; display: block;"));
       
       const textState = new MNState("Thử nhập gì đó...");
@@ -324,36 +1185,50 @@
 
       advCol.append(new MNDivider());
 
-      // Hàng nút tương tác
-      const btnRow = new MNRow();
+      const btnRow = new MNRow().style("gap: 6px; width: 100%;");
       
       const backBtn = new MNButton("← Quay lại").onClick(() => {
         gui.back();
-      }).style("flex: 1; border-color: var(--mn_secondary); color: var(--mn_secondary);");
+      }).style("flex: 1; border-color: var(--mn_secondary); color: var(--mn_secondary); font-size: 12px;");
       
       const testToastBtn = new MNButton("Gửi Test Error").onClick(() => {
         MNToast.show("Phát hiện lỗi kết nối máy chủ API!", "error", 4000);
-      }).style("flex: 1;");
+      }).style("flex: 1; font-size: 12px;");
+
+      const testDialogBtn = new MNButton("Mở Hộp thoại").onClick(() => {
+        MNDialog.show({
+          title: "Xác nhận đồng bộ",
+          message: "Bạn có muốn gửi toàn bộ cấu hình Sandbox hiện tại lên Cloud Server không?",
+          confirmText: "Đồng ý",
+          cancelText: "Hủy bỏ",
+          onConfirm: () => MNToast.show("Đã gửi dữ liệu thành công!", "success")
+        });
+      }).style("flex: 1; font-size: 12px;");
       
       btnRow.append(backBtn);
       btnRow.append(testToastBtn);
+      btnRow.append(testDialogBtn);
       advCol.append(btnRow);
       
       advScreen.append(advCol);
+
+      // ----------------------------------------------------
+      // MÀN HÌNH PREVIEW INTERACTIVE CHO TÀI LIỆU
+      // ----------------------------------------------------
+      const docsPreviewScreen = new MNScreen();
+      window.docsPreviewScreen = docsPreviewScreen;
 
       // ----------------------------------------------------
       // ĐĂNG KÝ NAVIGATOR VÀ HIỂN THỊ
       // ----------------------------------------------------
       const navigator = new StackNavigator([
         { name: "main", component: mainScreen },
-        { name: "advanced", component: advScreen }
+        { name: "advanced", component: advScreen },
+        { name: "docs_preview", component: docsPreviewScreen }
       ], "main");
       
       gui.setNavigator(navigator);
-      
-      // Cập nhật tiêu đề hiển thị trên thanh Grab bar kéo thả của Popup
       gui.popup.setTitle("Cấu hình Script Auto");
-      
       gui.render();
     });
   </script>
