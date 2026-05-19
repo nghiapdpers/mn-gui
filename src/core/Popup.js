@@ -144,8 +144,20 @@ export class Popup {
       const dx = clientX - startX;
       const dy = clientY - startY;
       
-      popup.style.left = `${initialLeft + dx}px`;
-      popup.style.top = `${initialTop + dy}px`;
+      const popupWidth = popup.offsetWidth;
+      const popupHeight = popup.offsetHeight;
+      const maxLeft = window.innerWidth - popupWidth;
+      const maxTop = window.innerHeight - popupHeight;
+      
+      let nextLeft = initialLeft + dx;
+      let nextTop = initialTop + dy;
+      
+      // Keep within viewport boundaries
+      nextLeft = Math.max(0, Math.min(nextLeft, maxLeft));
+      nextTop = Math.max(0, Math.min(nextTop, maxTop));
+      
+      popup.style.left = `${nextLeft}px`;
+      popup.style.top = `${nextTop}px`;
     }
 
     function dragEnd() {

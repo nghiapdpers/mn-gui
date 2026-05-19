@@ -8,7 +8,7 @@ export class Theme {
     secondary = "#f59e0b",
     secondaryVariant = "#d97706",
     background = "#f4fcf7",
-    surface = "rgba(255, 255, 255, 0.8)",
+    surface = "rgba(255, 255, 255, 0.4)",
     error = "#ef4444",
     onPrimary = "#ffffff",
     onSecondary = "#ffffff",
@@ -118,8 +118,7 @@ export class Theme {
       .mn-checkbox-container {
         display: flex;
         align-items: center;
-        position: relative;
-        padding-left: 30px;
+        gap: 10px;
         cursor: pointer;
         font-size: 14px;
         font-family: var(--mn_font);
@@ -135,15 +134,15 @@ export class Theme {
         width: 0;
       }
       .mn-checkmark {
-        position: absolute;
-        top: 5px;
-        left: 0;
+        display: inline-block;
+        position: relative;
         height: 18px;
         width: 18px;
         background-color: var(--mn_background);
         border: 1px solid var(--mn_border);
-        border-radius: 4px;
+        border-radius: 50%;
         transition: all 0.2s ease;
+        flex-shrink: 0;
       }
       .mn-checkbox-container:hover input ~ .mn-checkmark {
         border-color: var(--mn_primary);
@@ -162,9 +161,9 @@ export class Theme {
       }
       .mn-checkbox-container .mn-checkmark:after {
         left: 6px;
-        top: 2px;
+        top: 2.5px;
         width: 4px;
-        height: 9px;
+        height: 8px;
         border: solid white;
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
@@ -657,7 +656,7 @@ export class Theme {
       .mn-table tr:hover td { background: rgba(0,0,0,0.02); }
 
       /* MNDialog */
-      .mn-dialog-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+      .mn-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
       .mn-dialog-overlay.mn-show { opacity: 1; pointer-events: auto; }
       .mn-dialog { background: var(--mn_surface_solid); border: 1px solid var(--mn_border); border-radius: var(--mn_radius); padding: 20px; width: 90%; max-width: 320px; box-shadow: var(--mn_shadow); transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 12px; font-family: var(--mn_font); }
       .mn-dialog-overlay.mn-show .mn-dialog { transform: scale(1); }
@@ -712,7 +711,7 @@ export class Theme {
       @media (prefers-color-scheme: dark) {
         :host(:not([data-theme="light"])) {
           --mn_background: #0f172a;
-          --mn_surface: rgba(30, 41, 59, 0.85);
+          --mn_surface: rgba(15, 23, 42, 0.4);
           --mn_surface_solid: #1e293b;
           --mn_border: rgba(255, 255, 255, 0.1);
           --mn_onBackground: #f8fafc;
@@ -724,7 +723,7 @@ export class Theme {
       /* Slate Dark Mode - Explicit */
       :host([data-theme="dark"]) {
         --mn_background: #0f172a;
-        --mn_surface: rgba(30, 41, 59, 0.85);
+        --mn_surface: rgba(15, 23, 42, 0.4);
         --mn_surface_solid: #1e293b;
         --mn_border: rgba(255, 255, 255, 0.1);
         --mn_onBackground: #f8fafc;
