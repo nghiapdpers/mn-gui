@@ -140,6 +140,10 @@ export class Popup {
     function dragStart(e) {
       if (e.target.closest(".mngui-close-btn")) return;
       
+      if (e.type === "mousedown") {
+        e.preventDefault();
+      }
+      
       isDragging = true;
       const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
       const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;

@@ -657,6 +657,8 @@
         font-weight: 700;
         color: var(--mn_onSurface);
         font-size: 15px;
+        user-select: none;
+        -webkit-user-select: none;
       }
       .mngui-close-btn {
         border: none;
@@ -1204,6 +1206,9 @@
           header.addEventListener("touchstart", dragStart, { passive: true });
           function dragStart(e) {
             if (e.target.closest(".mngui-close-btn")) return;
+            if (e.type === "mousedown") {
+              e.preventDefault();
+            }
             isDragging = true;
             const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;

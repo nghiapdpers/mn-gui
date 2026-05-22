@@ -22,8 +22,8 @@
     },
     "Popup": {
       "type": "core",
-      "desc": "Floating window panel with drag, click resize, toggle key listeners, and public show/hide methods",
-      "updated_at": "2026-05-22T16:19:24.997Z"
+      "desc": "Floating window panel with drag, click bottom-right corner resize, and public show/hide methods",
+      "updated_at": "2026-05-22T16:33:10.362Z"
     },
     "StatePersistence": {
       "type": "core",
@@ -49,6 +49,11 @@
       "type": "yml",
       "desc": "GitHub Actions build and release deployment pipeline workflow",
       "updated_at": "2026-05-22T16:21:27.369Z"
+    },
+    "docs-data": {
+      "type": "js",
+      "desc": "Interactive documentation markdown database with bilingual Vietnamese/English strings",
+      "updated_at": "2026-05-22T16:39:30.990Z"
     }
   },
   "edges": [
@@ -73,17 +78,17 @@
       "relation": "navigates"
     },
     {
+      "from": "Theme",
+      "to": "StatePersistence",
+      "relation": "persists"
+    },
+    {
       "from": "Popup",
       "to": "Theme",
       "relation": "styles"
     },
     {
       "from": "Popup",
-      "to": "StatePersistence",
-      "relation": "persists"
-    },
-    {
-      "from": "Theme",
       "to": "StatePersistence",
       "relation": "persists"
     }

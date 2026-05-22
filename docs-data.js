@@ -762,7 +762,7 @@ MNDialog.show({
   cancelText: "Cancel",
   onConfirm: () => console.log("Reset successfully!")
  });
-\`\`\`
+\`\`\``
     },
     {
       id: "mnlist",

@@ -15,11 +15,12 @@ graph TD;
   MNState["MNState<br/><i>(core)</i>"]
   StackNavigator["StackNavigator<br/><i>(core)</i>"]
   release["release<br/><i>(yml)</i>"]
+  docs_data["docs-data<br/><i>(js)</i>"]
   MNListItem -->|belongsTo| MNList
   MNGUI -->|uses| Theme
   MNGUI -->|renders| Popup
   MNGUI -->|navigates| StackNavigator
+  Theme -->|persists| StatePersistence
   Popup -->|styles| Theme
   Popup -->|persists| StatePersistence
-  Theme -->|persists| StatePersistence
 ```

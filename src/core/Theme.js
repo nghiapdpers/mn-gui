@@ -427,6 +427,8 @@ export class Theme {
         font-weight: 700;
         color: var(--mn_onSurface);
         font-size: 15px;
+        user-select: none;
+        -webkit-user-select: none;
       }
       .mngui-close-btn {
         border: none;
