@@ -247,7 +247,7 @@
       init_BaseComponent();
       init_StatePersistence();
       Theme = class {
-        constructor(primary = "#10b981", primaryVariant = "#059669", secondary = "#f59e0b", secondaryVariant = "#d97706", background = "#f4fcf7", surface = "rgba(255, 255, 255, 0.4)", error = "#ef4444", onPrimary = "#ffffff", onSecondary = "#ffffff", onBackground = "#0f172a", onSurface = "#0f172a", onError = "#ffffff") {
+        constructor(primary = "#10b981", primaryVariant = "#059669", secondary = "#f59e0b", secondaryVariant = "#d97706", background = "#f4fcf7", surface = "#ffffff", error = "#ef4444", onPrimary = "#ffffff", onSecondary = "#ffffff", onBackground = "#0f172a", onSurface = "#0f172a", onError = "#ffffff") {
           this.primary = primary;
           this.primaryVariant = primaryVariant;
           this.secondary = secondary;
@@ -261,7 +261,6 @@
           this.onSurface = onSurface;
           this.onError = onError;
           this.mode = StatePersistence.get("mngui_theme_mode") || "auto";
-          this.applyVariables();
           const css = `
       * {
         box-sizing: border-box;
@@ -893,10 +892,114 @@
       .mn-dialog-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--mn_onSurface); }
       .mn-dialog-message { margin: 0; font-size: 14px; color: var(--mn_onSurface); opacity: 0.9; line-height: 1.5; }
       .mn-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+      /* MNList & MNListItem */
+      .mn-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: var(--mn_surface);
+        border: 1px solid var(--mn_border);
+        border-radius: var(--mn_radius);
+        overflow: hidden;
+        margin: 6px 0;
+        padding: 4px 0;
+        font-family: var(--mn_font);
+      }
+      .mn-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        gap: 12px;
+        color: var(--mn_onSurface);
+        border-bottom: 1px solid var(--mn_border);
+      }
+      .mn-list-item:last-child {
+        border-bottom: none;
+      }
+      .mn-list-item:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+      :host([data-theme="dark"]) .mn-list-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      @media (prefers-color-scheme: dark) {
+        :host(:not([data-theme="light"])) .mn-list-item:hover {
+          background: rgba(255, 255, 255, 0.03);
+        }
+      }
+      .mn-list-item-leading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .mn-list-item-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 2px;
+        min-width: 0;
+      }
+      .mn-list-item-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--mn_onSurface);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mn-list-item-subtitle {
+        font-size: 12px;
+        color: var(--mn_onSurface);
+        opacity: 0.6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mn-list-item-trailing {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 13px;
+      }
+
+      /* Panel Resizer */
+      .mngui-resizer {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        right: 0;
+        bottom: 0;
+        cursor: se-resize;
+        background: transparent;
+        z-index: 100000;
+      }
+      .mngui-resizer::after {
+        content: "";
+        position: absolute;
+        right: 3px;
+        bottom: 3px;
+        width: 6px;
+        height: 6px;
+        border-right: 2px solid var(--mn_border);
+        border-bottom: 2px solid var(--mn_border);
+        transition: border-color 0.2s;
+      }
+      .mngui-resizer:hover::after {
+        border-right-color: var(--mn_primary);
+        border-bottom-color: var(--mn_primary);
+      }
     `;
           const style = document.createElement("style");
           style.textContent = css;
           getShadowRoot().append(style);
+          this.applyVariables();
         }
         setMode(mode) {
           this.mode = mode;
@@ -982,13 +1085,16 @@
   var init_Popup = __esm({
     "src/core/Popup.js"() {
       init_BaseComponent();
+      init_StatePersistence();
       Popup = class {
         constructor(theme) {
           this.isOpen = false;
           this.theme = theme;
+          const savedWidth = StatePersistence.get("mngui_popup_width");
+          const savedHeight = StatePersistence.get("mngui_popup_height");
           this.popupProps = {
-            width: "360px",
-            height: "480px",
+            width: savedWidth || "360px",
+            height: savedHeight || "480px",
             bottom: "80px",
             top: "",
             left: "",
@@ -1016,12 +1122,32 @@
             titleEl.textContent = title;
           }
         }
+        show() {
+          this.isOpen = true;
+          this.child.classList.add("show");
+          this.onShowCallback?.();
+          const toggleBtn = getShadowRoot().getElementById("mngui-toggle");
+          if (toggleBtn) {
+            toggleBtn.classList.add("hide");
+          }
+        }
+        hide() {
+          this.isOpen = false;
+          this.child.classList.remove("show");
+          this.onCloseCallback?.();
+          const toggleBtn = getShadowRoot().getElementById("mngui-toggle");
+          if (toggleBtn) {
+            toggleBtn.classList.remove("hide");
+          }
+        }
         setIcon(icon) {
           this.icon = icon;
         }
         setPopupSize(w, h) {
-          this.popupProps.width = w;
-          this.popupProps.height = h;
+          const savedWidth = StatePersistence.get("mngui_popup_width");
+          const savedHeight = StatePersistence.get("mngui_popup_height");
+          this.popupProps.width = savedWidth || w;
+          this.popupProps.height = savedHeight || h;
         }
         setPopupPosition(top, right, bottom, left) {
           this.popupProps.top = top;
@@ -1057,9 +1183,11 @@
             console.warn("This device supports touch events, so the toggle button will not be hidden.");
           } else {
             this.visibleToggle = false;
+            const savedWidth = StatePersistence.get("mngui_popup_width");
+            const savedHeight = StatePersistence.get("mngui_popup_height");
             this.popupProps = {
-              width: "360px",
-              height: "480px",
+              width: savedWidth || "360px",
+              height: savedHeight || "480px",
               bottom: "20px",
               top: "",
               left: "",
@@ -1222,10 +1350,11 @@
           this.child.append(this.header);
           getShadowRoot().append(this.child);
           const togglePopup = () => {
-            this.isOpen = !this.isOpen;
-            this.child.classList.toggle("show", this.isOpen);
-            if (this.isOpen) this.onShowCallback?.();
-            else this.onCloseCallback?.();
+            if (this.isOpen) {
+              this.hide();
+            } else {
+              this.show();
+            }
           };
           closeBtn.addEventListener("click", togglePopup);
           if (this.visibleToggle) {
@@ -1236,6 +1365,7 @@
             toggleBtn.addEventListener("click", togglePopup);
           }
           this.enableDragging();
+          this.enableResizing();
           window.addEventListener("keydown", (e) => {
             const keys = this.shortcut.split("+").map((key) => key.trim().toLowerCase());
             const lastKey = keys[keys.length - 1];
@@ -1251,6 +1381,55 @@
               togglePopup();
             }
           });
+        }
+        enableResizing() {
+          const popup = this.child;
+          const resizer = document.createElement("div");
+          resizer.setAttribute("class", "mngui-resizer");
+          popup.append(resizer);
+          let isResizing = false;
+          let startWidth, startHeight, startX, startY;
+          resizer.addEventListener("mousedown", initResize);
+          resizer.addEventListener("touchstart", initResize, { passive: true });
+          function initResize(e) {
+            isResizing = true;
+            const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+            startX = clientX;
+            startY = clientY;
+            startWidth = popup.offsetWidth;
+            startHeight = popup.offsetHeight;
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+            document.addEventListener("touchmove", resize, { passive: false });
+            document.addEventListener("touchend", stopResize);
+          }
+          const self2 = this;
+          function resize(e) {
+            if (!isResizing) return;
+            if (e.type === "touchmove") e.preventDefault();
+            const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            const newWidth = Math.max(280, startWidth + dx);
+            const newHeight = Math.max(300, startHeight + dy);
+            popup.style.width = `${newWidth}px`;
+            popup.style.height = `${newHeight}px`;
+            self2.popupProps.width = `${newWidth}px`;
+            self2.popupProps.height = `${newHeight}px`;
+          }
+          function stopResize() {
+            if (isResizing) {
+              isResizing = false;
+              document.removeEventListener("mousemove", resize);
+              document.removeEventListener("mouseup", stopResize);
+              document.removeEventListener("touchmove", resize);
+              document.removeEventListener("touchend", stopResize);
+              StatePersistence.set("mngui_popup_width", popup.style.width);
+              StatePersistence.set("mngui_popup_height", popup.style.height);
+            }
+          }
         }
       };
     }
@@ -2347,6 +2526,115 @@
     }
   });
 
+  // src/components/MNList.js
+  var MNList;
+  var init_MNList = __esm({
+    "src/components/MNList.js"() {
+      init_BaseComponent();
+      MNList = class extends BaseComponent {
+        constructor() {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-list");
+        }
+        addItem(item) {
+          if (Array.isArray(item)) {
+            item.forEach((i) => {
+              if (i && i.element) {
+                this.element.append(i.element);
+              } else if (i instanceof HTMLElement) {
+                this.element.append(i);
+              }
+            });
+          } else {
+            if (item && item.element) {
+              this.element.append(item.element);
+            } else if (item instanceof HTMLElement) {
+              this.element.append(item);
+            }
+          }
+          return this;
+        }
+        append(nodes) {
+          return this.addItem(nodes);
+        }
+      };
+    }
+  });
+
+  // src/components/MNListItem.js
+  var MNListItem;
+  var init_MNListItem = __esm({
+    "src/components/MNListItem.js"() {
+      init_BaseComponent();
+      MNListItem = class extends BaseComponent {
+        constructor(title = "", subtitle = "", leading = null, trailing = null) {
+          super(document.createElement("div"));
+          this.element.setAttribute("class", "mn-list-item");
+          this.titleText = title;
+          this.subtitleText = subtitle;
+          if (leading) {
+            this.leadingEl = document.createElement("div");
+            this.leadingEl.setAttribute("class", "mn-list-item-leading");
+            if (typeof leading === "string") {
+              this.leadingEl.textContent = leading;
+            } else if (leading.element) {
+              this.leadingEl.append(leading.element);
+            } else if (leading instanceof HTMLElement) {
+              this.leadingEl.append(leading);
+            }
+            this.element.append(this.leadingEl);
+          }
+          this.contentEl = document.createElement("div");
+          this.contentEl.setAttribute("class", "mn-list-item-content");
+          this.titleEl = document.createElement("div");
+          this.titleEl.setAttribute("class", "mn-list-item-title");
+          this.titleEl.textContent = this.titleText;
+          this.contentEl.append(this.titleEl);
+          if (this.subtitleText) {
+            this.subtitleEl = document.createElement("div");
+            this.subtitleEl.setAttribute("class", "mn-list-item-subtitle");
+            this.subtitleEl.textContent = this.subtitleText;
+            this.contentEl.append(this.subtitleEl);
+          }
+          this.element.append(this.contentEl);
+          if (trailing) {
+            this.trailingEl = document.createElement("div");
+            this.trailingEl.setAttribute("class", "mn-list-item-trailing");
+            if (typeof trailing === "string") {
+              this.trailingEl.textContent = trailing;
+            } else if (trailing.element) {
+              this.trailingEl.append(trailing.element);
+            } else if (trailing instanceof HTMLElement) {
+              this.trailingEl.append(trailing);
+            }
+            this.element.append(this.trailingEl);
+          }
+        }
+        setTitle(title) {
+          this.titleText = title;
+          this.titleEl.textContent = title;
+          return this;
+        }
+        setSubtitle(subtitle) {
+          this.subtitleText = subtitle;
+          if (!this.subtitleEl) {
+            this.subtitleEl = document.createElement("div");
+            this.subtitleEl.setAttribute("class", "mn-list-item-subtitle");
+            this.contentEl.append(this.subtitleEl);
+          }
+          this.subtitleEl.textContent = subtitle;
+          return this;
+        }
+        onClick(callback) {
+          this.addEventListenerSafe(this.element, "click", (e) => {
+            callback(e);
+          });
+          return this;
+        }
+      };
+    }
+  });
+
   // src/index.js
   var index_exports = {};
   __export(index_exports, {
@@ -2362,6 +2650,8 @@
     MNGUI: () => MNGUI,
     MNImage: () => MNImage,
     MNInput: () => MNInput,
+    MNList: () => MNList,
+    MNListItem: () => MNListItem,
     MNProgressBar: () => MNProgressBar,
     MNRadioGroup: () => MNRadioGroup,
     MNRow: () => MNRow,
@@ -2415,6 +2705,8 @@
       init_MNRadioGroup();
       init_MNTable();
       init_MNDialog();
+      init_MNList();
+      init_MNListItem();
     }
   });
 

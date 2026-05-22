@@ -29,3 +29,6 @@ export { MNTooltip } from './components/MNTooltip.js';
 export { MNRadioGroup } from './components/MNRadioGroup.js';
 export { MNTable } from './components/MNTable.js';
 export { MNDialog } from './components/MNDialog.js';
+export { MNList } from './components/MNList.js';
+export { MNListItem } from './components/MNListItem.js';
+

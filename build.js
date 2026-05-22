@@ -34,7 +34,9 @@ const componentMap = {
   MNTooltip: 'mn-tooltip',
   MNRadioGroup: 'mn-radio-group',
   MNTable: 'mn-table',
-  MNDialog: 'mn-dialog'
+  MNDialog: 'mn-dialog',
+  MNList: 'mn-list',
+  MNListItem: 'mn-list-item'
 };
 
 function runBuild() {

@@ -863,8 +863,14 @@
       const coreMenu = document.getElementById("menu-core");
       const compMenu = document.getElementById("menu-components");
 
+      if (!coreMenu || !compMenu) return;
       coreMenu.innerHTML = "";
       compMenu.innerHTML = "";
+
+      if (!window.MNGUIDocsData) {
+        console.warn("MNGUIDocsData is not loaded yet.");
+        return;
+      }
 
       window.MNGUIDocsData.core.forEach(item => {
         const li = document.createElement("li");
@@ -898,7 +904,9 @@
 
     // Renders compiled markdown to main pane
     function renderDocsContent() {
+      if (!window.MNGUIDocsData) return;
       const dataSet = window.MNGUIDocsData[activeModuleType];
+      if (!dataSet) return;
       const docItem = dataSet.find(item => item.id === activeModuleId);
       
       if (docItem) {
@@ -1022,6 +1030,18 @@
               });
             });
             wrapper.append(dlg);
+            break;
+
+          case "mnlist":
+            const sampleList = new MNList();
+            sampleList.addItem(new MNListItem("Item Tiêu đề", "Subtitle giải thích", "⭐", new MNBadge("VIP", "primary")));
+            sampleList.addItem(new MNListItem("Nút Bấm Trái", "Mô tả click", "🖱️", new MNButton("Click").onClick(() => MNToast.show("Clicked!"))));
+            wrapper.append(sampleList);
+            break;
+            
+          case "mnlistitem":
+            const sampleItem = new MNListItem("MNListItem Đơn lẻ", "Mô tả tính năng đi kèm", "📌", "Mở");
+            wrapper.append(sampleItem);
             break;
         }
 
@@ -1166,6 +1186,17 @@
           MNToast.show("Đổi chế độ sang: " + name, "success");
         });
       advCol.append(modeSelect);
+      
+      advCol.append(new MNText("Danh sách tài khoản (MNList):").style("font-size: 13px; font-weight: 600; margin-top: 6px; display: block;"));
+      const accountList = new MNList();
+      const acc1 = new MNListItem("Nghiapd (Admin)", "Hoạt động • VIP", "👤", new MNBadge("Hoạt động", "success"))
+        .onClick(() => MNToast.show("Đang mở cấu hình Nghiapd", "success"));
+      const acc2 = new MNListItem("Antigravity AI", "Đang phân tích dữ liệu", "🤖", new MNBadge("AI Mode", "primary"))
+        .onClick(() => MNToast.show("Đang cấu hình AI Assistant", "info"));
+      const acc3 = new MNListItem("Guest User", "Hết hạn sau 2 giờ", "👥", new MNBadge("Hết hạn", "warning"))
+        .onClick(() => MNToast.show("Gia hạn tài khoản khách?", "warning"));
+      accountList.addItem([acc1, acc2, acc3]);
+      advCol.append(accountList);
       
       advCol.append(new MNDivider());
       

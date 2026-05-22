@@ -39,7 +39,7 @@ jobs:
           
           # Lưu lại các tệp build và tài nguyên demo
           mkdir -p ../temp_build
-          cp -r mngui.js mngui.min.js dist/ mngui-offline.zip index.html mngui.d.ts ../temp_build/
+          cp -r mngui.js mngui.min.js dist/ mngui-offline.zip index.html docs-data.js mngui.d.ts ../temp_build/
           
           # Khôi phục trạng thái làm việc sạch sẽ để tránh xung đột khi chuyển nhánh
           git reset --hard
@@ -60,7 +60,7 @@ jobs:
           cp -r ../temp_build/* .
           
           # Thêm và commit thay đổi
-          git add mngui.js mngui.min.js dist/ mngui-offline.zip index.html mngui.d.ts
+          git add mngui.js mngui.min.js dist/ mngui-offline.zip index.html docs-data.js mngui.d.ts
           git commit -m "chore: release assets [skip ci]" || echo "Không có thay đổi để commit"
           
           # Push sang nhánh release

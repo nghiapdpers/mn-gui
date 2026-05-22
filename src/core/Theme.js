@@ -8,7 +8,7 @@ export class Theme {
     secondary = "#f59e0b",
     secondaryVariant = "#d97706",
     background = "#f4fcf7",
-    surface = "rgba(255, 255, 255, 0.4)",
+    surface = "#ffffff",
     error = "#ef4444",
     onPrimary = "#ffffff",
     onSecondary = "#ffffff",
@@ -30,7 +30,6 @@ export class Theme {
     this.onError = onError;
 
     this.mode = StatePersistence.get("mngui_theme_mode") || "auto";
-    this.applyVariables();
 
     const css = `
       * {
@@ -663,11 +662,116 @@ export class Theme {
       .mn-dialog-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--mn_onSurface); }
       .mn-dialog-message { margin: 0; font-size: 14px; color: var(--mn_onSurface); opacity: 0.9; line-height: 1.5; }
       .mn-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+      /* MNList & MNListItem */
+      .mn-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: var(--mn_surface);
+        border: 1px solid var(--mn_border);
+        border-radius: var(--mn_radius);
+        overflow: hidden;
+        margin: 6px 0;
+        padding: 4px 0;
+        font-family: var(--mn_font);
+      }
+      .mn-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        gap: 12px;
+        color: var(--mn_onSurface);
+        border-bottom: 1px solid var(--mn_border);
+      }
+      .mn-list-item:last-child {
+        border-bottom: none;
+      }
+      .mn-list-item:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+      :host([data-theme="dark"]) .mn-list-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      @media (prefers-color-scheme: dark) {
+        :host(:not([data-theme="light"])) .mn-list-item:hover {
+          background: rgba(255, 255, 255, 0.03);
+        }
+      }
+      .mn-list-item-leading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .mn-list-item-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 2px;
+        min-width: 0;
+      }
+      .mn-list-item-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--mn_onSurface);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mn-list-item-subtitle {
+        font-size: 12px;
+        color: var(--mn_onSurface);
+        opacity: 0.6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mn-list-item-trailing {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 13px;
+      }
+
+      /* Panel Resizer */
+      .mngui-resizer {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        right: 0;
+        bottom: 0;
+        cursor: se-resize;
+        background: transparent;
+        z-index: 100000;
+      }
+      .mngui-resizer::after {
+        content: "";
+        position: absolute;
+        right: 3px;
+        bottom: 3px;
+        width: 6px;
+        height: 6px;
+        border-right: 2px solid var(--mn_border);
+        border-bottom: 2px solid var(--mn_border);
+        transition: border-color 0.2s;
+      }
+      .mngui-resizer:hover::after {
+        border-right-color: var(--mn_primary);
+        border-bottom-color: var(--mn_primary);
+      }
     `;
 
     const style = document.createElement("style");
     style.textContent = css;
     getShadowRoot().append(style);
+
+    this.applyVariables();
   }
 
   setMode(mode) {

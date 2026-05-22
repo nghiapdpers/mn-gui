@@ -1,0 +1,91 @@
+{
+  "nodes": {
+    "MNList": {
+      "type": "component",
+      "desc": "Container component that groups MNListItem elements",
+      "updated_at": "2026-05-22T16:14:23.591Z"
+    },
+    "MNListItem": {
+      "type": "component",
+      "desc": "Multipurpose list item row element used inside MNList",
+      "updated_at": "2026-05-22T16:14:51.660Z"
+    },
+    "MNGUI": {
+      "type": "core",
+      "desc": "Central controller and entry point of MNGUI",
+      "updated_at": "2026-05-22T16:14:53.464Z"
+    },
+    "Theme": {
+      "type": "core",
+      "desc": "Style management, color palettes, active dark/light mode toggling, and solid obsidian premium styling",
+      "updated_at": "2026-05-22T16:19:27.686Z"
+    },
+    "Popup": {
+      "type": "core",
+      "desc": "Floating window panel with drag, click resize, toggle key listeners, and public show/hide methods",
+      "updated_at": "2026-05-22T16:19:24.997Z"
+    },
+    "StatePersistence": {
+      "type": "core",
+      "desc": "Unified local storage manager abstraction wrapper around localStorage and GM storage",
+      "updated_at": "2026-05-22T16:14:37.935Z"
+    },
+    "BaseComponent": {
+      "type": "core",
+      "desc": "The parent abstraction base class containing standard rendering, binding, styling and listeners utilities",
+      "updated_at": "2026-05-22T16:14:39.605Z"
+    },
+    "MNState": {
+      "type": "core",
+      "desc": "Reactive state observable engine enabling robust two-way data bindings",
+      "updated_at": "2026-05-22T16:14:41.588Z"
+    },
+    "StackNavigator": {
+      "type": "core",
+      "desc": "State-based view stack screen router supporting animated transitions",
+      "updated_at": "2026-05-22T16:14:43.158Z"
+    },
+    "release": {
+      "type": "yml",
+      "desc": "GitHub Actions build and release deployment pipeline workflow",
+      "updated_at": "2026-05-22T16:21:27.369Z"
+    }
+  },
+  "edges": [
+    {
+      "from": "MNListItem",
+      "to": "MNList",
+      "relation": "belongsTo"
+    },
+    {
+      "from": "MNGUI",
+      "to": "Theme",
+      "relation": "uses"
+    },
+    {
+      "from": "MNGUI",
+      "to": "Popup",
+      "relation": "renders"
+    },
+    {
+      "from": "MNGUI",
+      "to": "StackNavigator",
+      "relation": "navigates"
+    },
+    {
+      "from": "Popup",
+      "to": "Theme",
+      "relation": "styles"
+    },
+    {
+      "from": "Popup",
+      "to": "StatePersistence",
+      "relation": "persists"
+    },
+    {
+      "from": "Theme",
+      "to": "StatePersistence",
+      "relation": "persists"
+    }
+  ]
+}

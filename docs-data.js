@@ -761,8 +761,128 @@ MNDialog.show({
   confirmText: "Yes, Reset",
   cancelText: "Cancel",
   onConfirm: () => console.log("Reset successfully!")
-});
-\`\`\``
+ });
+\`\`\`
+    },
+    {
+      id: "mnlist",
+      name: "MNList",
+      icon: "📋",
+      vi: `# MNList — Danh sách container chứa các phần tử
+      
+\`MNList\` đóng vai trò là một container để nhóm các đối tượng \`MNListItem\` lại với nhau theo cấu trúc danh sách hiện đại, bo góc mượt mà và bóng mờ Glassmorphism.
+
+---
+
+## 💡 Cú pháp khởi tạo
+
+\`\`\`javascript
+const list = new MNList();
+\`\`\`
+
+---
+
+## 🛠️ Các phương thức (API)
+
+### 1. \`.addItem(item)\`
+Thêm một hoặc nhiều đối tượng \`MNListItem\` vào danh sách.
+*   **Tham số**: \`item\` (\`BaseComponent | HTMLElement | Array<BaseComponent | HTMLElement>\`)
+*   **Trả về**: \`this\` (cho phép chaining)
+
+### 2. \`.append(nodes)\`
+Alias của phương thức \`addItem(item)\`.`,
+      en: `# MNList — Nested List Wrapper
+      
+\`MNList\` acts as a vertical list container that styles and renders multiple \`MNListItem\` rows inside a clean rounded glassmorphic frame.
+
+---
+
+## 💡 Initialization
+
+\`\`\`javascript
+const list = new MNList();
+\`\`\`
+
+---
+
+## 🛠️ Methods (API)
+
+### 1. \`.addItem(item)\`
+Appends a single row or an array of \`MNListItem\` objects into the list body.
+*   **Parameters**: \`item\` (\`BaseComponent | HTMLElement | Array<BaseComponent | HTMLElement>\`)
+*   **Returns**: \`this\` (chainable)
+
+### 2. \`.append(nodes)\`
+An alias of the \`.addItem(item)\` method.`
+    },
+    {
+      id: "mnlistitem",
+      name: "MNListItem",
+      icon: "🏷️",
+      vi: `# MNListItem — Phần tử danh sách đa năng
+
+\`MNListItem\` là một dòng dữ liệu đa năng trong \`MNList\`. Nó hỗ trợ hiển thị tiêu đề, mô tả phụ, biểu tượng dẫn đầu (leading), nút bấm/badge hành động đi kèm (trailing) và xử lý sự kiện click cực kỳ linh hoạt.
+
+---
+
+## 💡 Cú pháp khởi tạo
+
+\`\`\`javascript
+const item = new MNListItem(title, subtitle, leading, trailing);
+\`\`\`
+*   **title** (\`string\`): Tiêu đề chính của dòng.
+*   **subtitle** (\`string\`, tùy chọn): Mô tả phụ nhỏ bên dưới tiêu đề chính.
+*   **leading** (\`string | BaseComponent | HTMLElement\`, tùy chọn): Biểu tượng/Emoji hoặc thành phần UI dẫn đầu bên trái.
+*   **trailing** (\`string | BaseComponent | HTMLElement\`, tùy chọn): Badge, Switch, Button hoặc thành phần UI kết thúc bên phải.
+
+---
+
+## 🛠️ Các phương thức (API)
+
+### 1. \`.setTitle(text)\`
+Cập nhật động tiêu đề chính của phần tử danh sách.
+*   **Trả về**: \`this\`
+
+### 2. \`.setSubtitle(text)\`
+Cập nhật động mô tả phụ của phần tử danh sách.
+*   **Trả về**: \`this\`
+
+### 3. \`.onClick(callback)\`
+Lắng nghe sự kiện nhấp chuột (click) vào dòng phần tử.
+*   **Tham số**: \`callback\` (\`(event: MouseEvent) => void\`)
+*   **Trả về**: \`this\``,
+      en: `# MNListItem — Multipurpose List Item Row
+
+\`MNListItem\` represents an individual rich list item. It comes styled out-of-the-box with support for titles, smaller secondary subtitles, leading icons/widgets, trailing action badges/widgets, and fully responsive click handlers.
+
+---
+
+## 💡 Initialization
+
+\`\`\`javascript
+const item = new MNListItem(title, subtitle, leading, trailing);
+\`\`\`
+*   **title** (\`string\`): The main bold row title.
+*   **subtitle** (\`string\`, optional): A smaller lighter subtitle stacked underneath the title.
+*   **leading** (\`string | BaseComponent | HTMLElement\`, optional): Leftmost ornament (emojis, avatars, icons, or badges).
+*   **trailing** (\`string | BaseComponent | HTMLElement\`, optional): Rightmost ornament (action buttons, switches, badges).
+
+---
+
+## 🛠️ Methods (API)
+
+### 1. \`.setTitle(text)\`
+Dynamically updates the primary title of the item.
+*   **Returns**: \`this\` (chainable)
+
+### 2. \`.setSubtitle(text)\`
+Dynamically updates the smaller subtitle description.
+*   **Returns**: \`this\` (chainable)
+
+### 3. \`.onClick(callback)\`
+Hooks a mouse click handler callback onto the row.
+*   **Parameters**: \`callback\` (\`(event: MouseEvent) => void\`)
+*   **Returns**: \`this\` (chainable)`
     }
   ]
 };

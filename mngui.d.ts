@@ -144,6 +144,8 @@ export class Popup {
     fontSize?: string;
   };
   setTitle(title: string): void;
+  show(): void;
+  hide(): void;
 }
 
 export class MNGUI {
@@ -223,3 +225,17 @@ export class MNDialog {
     onCancel?: () => void;
   }): void;
 }
+
+export class MNList extends BaseComponent {
+  constructor();
+  addItem(item: BaseComponent | HTMLElement | Array<BaseComponent | HTMLElement>): this;
+  append(nodes: BaseComponent | HTMLElement | Array<BaseComponent | HTMLElement>): this;
+}
+
+export class MNListItem extends BaseComponent {
+  constructor(title: string, subtitle?: string, leading?: string | BaseComponent | HTMLElement, trailing?: string | BaseComponent | HTMLElement);
+  setTitle(title: string): this;
+  setSubtitle(subtitle: string): this;
+  onClick(callback: (event: MouseEvent) => void): this;
+}
+

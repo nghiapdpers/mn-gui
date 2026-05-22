@@ -1,13 +1,17 @@
 import { getShadowRoot } from './BaseComponent.js';
+import { StatePersistence } from './StatePersistence.js';
 
 export class Popup {
   constructor (theme) {
     this.isOpen = false;
     this.theme = theme;
 
+    const savedWidth = StatePersistence.get("mngui_popup_width");
+    const savedHeight = StatePersistence.get("mngui_popup_height");
+
     this.popupProps = {
-      width: "360px",
-      height: "480px",
+      width: savedWidth || "360px",
+      height: savedHeight || "480px",
       bottom: "80px",
       top: "",
       left: "",
@@ -39,13 +43,35 @@ export class Popup {
     }
   }
 
+  show() {
+    this.isOpen = true;
+    this.child.classList.add("show");
+    this.onShowCallback?.();
+    const toggleBtn = getShadowRoot().getElementById("mngui-toggle");
+    if (toggleBtn) {
+      toggleBtn.classList.add("hide");
+    }
+  }
+
+  hide() {
+    this.isOpen = false;
+    this.child.classList.remove("show");
+    this.onCloseCallback?.();
+    const toggleBtn = getShadowRoot().getElementById("mngui-toggle");
+    if (toggleBtn) {
+      toggleBtn.classList.remove("hide");
+    }
+  }
+
   setIcon(icon) {
     this.icon = icon;
   }
 
   setPopupSize(w, h) {
-    this.popupProps.width = w;
-    this.popupProps.height = h;
+    const savedWidth = StatePersistence.get("mngui_popup_width");
+    const savedHeight = StatePersistence.get("mngui_popup_height");
+    this.popupProps.width = savedWidth || w;
+    this.popupProps.height = savedHeight || h;
   }
 
   setPopupPosition(top, right, bottom, left) {
@@ -89,9 +115,11 @@ export class Popup {
       console.warn("This device supports touch events, so the toggle button will not be hidden.");
     } else {
       this.visibleToggle = false;
+      const savedWidth = StatePersistence.get("mngui_popup_width");
+      const savedHeight = StatePersistence.get("mngui_popup_height");
       this.popupProps = {
-        width: "360px",
-        height: "480px",
+        width: savedWidth || "360px",
+        height: savedHeight || "480px",
         bottom: "20px",
         top: "",
         left: "",
@@ -284,10 +312,11 @@ export class Popup {
     getShadowRoot().append(this.child);
 
     const togglePopup = () => {
-      this.isOpen = !this.isOpen;
-      this.child.classList.toggle("show", this.isOpen);
-      if (this.isOpen) this.onShowCallback?.();
-      else this.onCloseCallback?.();
+      if (this.isOpen) {
+        this.hide();
+      } else {
+        this.show();
+      }
     };
 
     closeBtn.addEventListener("click", togglePopup);
@@ -302,6 +331,7 @@ export class Popup {
     }
 
     this.enableDragging();
+    this.enableResizing();
 
     window.addEventListener("keydown", (e) => {
       const keys = this.shortcut.split('+').map(key => key.trim().toLowerCase());
@@ -321,5 +351,69 @@ export class Popup {
         togglePopup();
       }
     });
+  }
+
+  enableResizing() {
+    const popup = this.child;
+    const resizer = document.createElement("div");
+    resizer.setAttribute("class", "mngui-resizer");
+    popup.append(resizer);
+
+    let isResizing = false;
+    let startWidth, startHeight, startX, startY;
+
+    resizer.addEventListener("mousedown", initResize);
+    resizer.addEventListener("touchstart", initResize, { passive: true });
+
+    function initResize(e) {
+      isResizing = true;
+      const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+      const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+
+      startX = clientX;
+      startY = clientY;
+
+      startWidth = popup.offsetWidth;
+      startHeight = popup.offsetHeight;
+
+      document.addEventListener("mousemove", resize);
+      document.addEventListener("mouseup", stopResize);
+      document.addEventListener("touchmove", resize, { passive: false });
+      document.addEventListener("touchend", stopResize);
+    }
+
+    const self = this;
+    function resize(e) {
+      if (!isResizing) return;
+      if (e.type === "touchmove") e.preventDefault();
+
+      const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+      const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+
+      const newWidth = Math.max(280, startWidth + dx);
+      const newHeight = Math.max(300, startHeight + dy);
+
+      popup.style.width = `${newWidth}px`;
+      popup.style.height = `${newHeight}px`;
+
+      self.popupProps.width = `${newWidth}px`;
+      self.popupProps.height = `${newHeight}px`;
+    }
+
+    function stopResize() {
+      if (isResizing) {
+        isResizing = false;
+        document.removeEventListener("mousemove", resize);
+        document.removeEventListener("mouseup", stopResize);
+        document.removeEventListener("touchmove", resize);
+        document.removeEventListener("touchend", stopResize);
+
+        StatePersistence.set("mngui_popup_width", popup.style.width);
+        StatePersistence.set("mngui_popup_height", popup.style.height);
+      }
+    }
   }
 }
